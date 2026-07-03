@@ -33,7 +33,7 @@
 ### 1. Clone & configure
 
 ```bash
-git clone https://github.com/CypherMorgan/qpilot.git
+git clone <your-repo-url>
 cd qpilot
 cp .env.example .env
 ```
