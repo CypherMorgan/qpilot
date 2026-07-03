@@ -163,6 +163,7 @@ class ApiTestGenerationService:
                     )
 
             # 8. Build ZIP archive
+            assert test_files is not None  # loop above always sets or raises
             file_list = [
                 {"filename": "conftest.py", "content": conftest_content},
                 {"filename": "README.md", "content": readme_content},
