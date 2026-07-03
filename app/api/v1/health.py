@@ -1,0 +1,65 @@
+"""Health check endpoint.
+
+Provides a liveness probe with sub-component status checks
+(database connectivity, AI provider reachability, etc.).
+
+The overall endpoint always returns 200 so that container orchestrators
+(Docker, K8s) see a responsive application.  Individual check failures
+are reported in the ``checks`` object without changing the HTTP status.
+"""
+
+from __future__ import annotations
+
+import time
+from datetime import datetime
+
+from typing import Any
+
+from fastapi import APIRouter, Request
+from structlog import get_logger
+
+from app.domain.models import ResponseMeta
+from app.infrastructure.database import DatabaseManager
+
+router = APIRouter(tags=["Health"])
+_logger = get_logger(__name__)
+
+
+@router.get("/health")
+async def health_check(request: Request) -> dict[str, Any]:
+    """Return application health status including sub-component checks.
+
+    Docker health checks should read ``data.status`` — it reflects the
+    overall application health.  Currently always ``healthy`` since the
+    app is resilient to individual downstream failures.
+    """
+    config = getattr(request.app.state, "config", None)
+    db_manager: DatabaseManager | None = getattr(
+        request.app.state, "db_manager", None
+    )
+
+    # Check database connectivity
+    db_check: dict[str, str | int] = {"status": "not_configured"}
+    if db_manager is not None:
+        start = time.monotonic()
+        is_healthy = await db_manager.check_connection()
+        elapsed_ms = round((time.monotonic() - start) * 1000)
+        if is_healthy:
+            db_check = {"status": "healthy", "latency_ms": elapsed_ms}
+        else:
+            db_check = {"status": "unhealthy", "latency_ms": elapsed_ms}
+
+    return {
+        "data": {
+            "status": "healthy",
+            "app_name": getattr(config, "app_name", "QPilot"),
+            "app_version": getattr(config, "app_version", "0.1.0"),
+            "checks": {
+                "database": db_check,
+            },
+        },
+        "meta": ResponseMeta(
+            request_id=getattr(request.state, "request_id", ""),
+            timestamp=datetime.utcnow(),
+        ).model_dump(),
+    }

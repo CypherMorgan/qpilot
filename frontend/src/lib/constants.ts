@@ -1,0 +1,33 @@
+/** Application-wide constants */
+export const APP_NAME = "QPilot";
+export const APP_VERSION = "0.1.0";
+
+/** API base URL — configured via Vite env, defaults to local backend */
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000";
+
+/** API prefix */
+export const API_PREFIX = "/api/v1";
+
+/** Route paths */
+export const ROUTES = {
+  HOME: "/",
+  SETTINGS: "/settings",
+  REQUIREMENT_ANALYSIS: "/requirements/analyze",
+  REQUIREMENT_SESSION: "/requirements/sessions/:sessionId",
+  API_TEST_GENERATION: "/api-tests/analyze",
+  API_TEST_SESSION: "/api-tests/sessions/:sessionId",
+  FAILURE_ANALYSIS: "/failures",
+} as const;
+
+/** Navigation items displayed in the sidebar */
+export const NAV_ITEMS = [
+  { label: "Dashboard", path: ROUTES.HOME, icon: "LayoutDashboard" as const },
+  { label: "Requirement Analysis", path: ROUTES.REQUIREMENT_ANALYSIS, icon: "FileText" as const },
+  { label: "API Test Generation", path: ROUTES.API_TEST_GENERATION, icon: "FlaskConical" as const },
+  { label: "Settings", path: ROUTES.SETTINGS, icon: "Settings" as const },
+] as const;
+
+/** Local storage keys */
+export const STORAGE_KEYS = {
+  THEME: "qpilot-theme",
+} as const;

@@ -1,0 +1,88 @@
+# QPilot — Docker Compose
+# ========================
+#
+# Production-adjacent configuration for local development.
+# All services use the same PostgreSQL 16 backend.
+#
+# Components:
+#   postgres — PostgreSQL 16 with health check and named volume
+#   backend  — FastAPI application (uvicorn)
+#   frontend — Nginx serving the React SPA
+#
+# Usage:
+#   docker compose up --build            # Start everything
+#   docker compose up backend -d         # Run in background
+#   docker compose down -v               # Stop and remove volumes
+#   docker compose logs -f               # Follow logs
+
+services:
+  # ── PostgreSQL ──────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: qpilot-postgres
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U qpilot -d qpilot"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    environment:
+      POSTGRES_USER: qpilot
+      POSTGRES_PASSWORD: qpilot
+      POSTGRES_DB: qpilot
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - backend
+
+  # ── Backend API ─────────────────────────────────────────────
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: qpilot-backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    environment:
+      # Database — points to the compose-managed PostgreSQL instance
+      DATABASE_URL: "postgresql+asyncpg://qpilot:qpilot@postgres:5432/qpilot"
+      DATABASE_SYNC_URL: "postgresql://qpilot:qpilot@postgres:5432/qpilot"
+
+      # Logging
+      LOG_LEVEL: "INFO"
+
+      # Application
+      APP_NAME: "QPilot"
+      CORS_ORIGINS: "http://localhost:5173,http://localhost:8000,http://localhost:3000"
+    networks:
+      - backend
+
+  # ── Frontend SPA ────────────────────────────────────────────
+  frontend:
+    build:
+      context: frontend
+      dockerfile: Dockerfile
+    container_name: qpilot-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "3000:80"
+    networks:
+      - backend
+
+volumes:
+  postgres_data:
+    name: qpilot-postgres-data
+
+networks:
+  backend:
+    name: qpilot-backend
+    driver: bridge

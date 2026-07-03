@@ -1,0 +1,35 @@
+# ── Version control ─────────────────────────────────────────
+.git/
+.gitignore
+
+# ── Python cache ──────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# ── Testing & tooling ────────────────────────────────────────
+.pytest_cache/
+.ruff_cache/
+tests/
+htmlcov/
+
+# ── Environment ───────────────────────────────────────────────
+.env
+.venv/
+venv/
+
+# ── IDE ───────────────────────────────────────────────────────
+.idea/
+.vscode/
+
+# ── Documentation ─────────────────────────────────────────────
+docs/
+*.md
+
+# ── Frontend (separate Docker build) ──────────────────────────
+frontend/
+node_modules/
+
+# ── OS artifacts ──────────────────────────────────────────────
+.DS_Store
+Thumbs.db

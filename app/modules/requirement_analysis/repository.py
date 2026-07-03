@@ -1,0 +1,90 @@
+"""Requirement Analysis repository.
+
+Provides database access for requirement analysis sessions,
+extending the generic ``BaseRepository`` with requirement-specific
+query methods.
+"""
+
+from __future__ import annotations
+
+from uuid import UUID
+
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.infrastructure.models.analysis_session import AnalysisSession
+from app.infrastructure.repository import BaseRepository
+from app.modules.requirement_analysis.models import AnalysisSessionListItem
+
+
+class RequirementAnalysisRepository(BaseRepository[AnalysisSession]):
+    """Repository for requirement analysis sessions.
+
+    Inherits create, get, list, update, delete from ``BaseRepository``.
+    Adds requirement-specific query methods below.
+    """
+
+    model_class = AnalysisSession
+
+    def __init__(self, session: AsyncSession) -> None:
+        super().__init__(session)
+
+    async def list_sessions(
+        self,
+        page: int = 1,
+        page_size: int = 20,
+    ) -> tuple[list[AnalysisSessionListItem], int]:
+        """List requirement analysis sessions with pagination.
+
+        Filters to ``REQUIREMENT_ANALYSIS`` type and returns lightweight
+        summary items sorted by creation date (newest first).
+        """
+        from app.domain.models import AnalysisType
+
+        stmt = (
+            select(AnalysisSession)
+            .where(AnalysisSession.analysis_type == AnalysisType.REQUIREMENT_ANALYSIS)
+            .order_by(AnalysisSession.created_at.desc())
+            .offset((page - 1) * page_size)
+            .limit(page_size)
+        )
+        result = await self._session.execute(stmt)
+        sessions = list(result.scalars().all())
+
+        # Also get total count
+        count_stmt = (
+            select(self.model_class.id)
+            .where(self.model_class.analysis_type == AnalysisType.REQUIREMENT_ANALYSIS)
+        )
+        count_result = await self._session.execute(count_stmt)
+        total = len(list(count_result.scalars().all()))
+
+        items = [
+            AnalysisSessionListItem(
+                session_id=s.id,
+                title=s.title,
+                source_type=s.input_source_type,
+                status=s.status.value if hasattr(s.status, "value") else str(s.status),
+                provider=s.provider_used,
+                total_tokens=s.total_tokens or 0,
+                created_at=s.created_at,
+                updated_at=s.updated_at,
+                input_summary=(
+                    s.output_data.get("input_summary")
+                    if s.output_data and isinstance(s.output_data, dict)
+                    else None
+                ),
+            )
+            for s in sessions
+        ]
+
+        return items, total
+
+    async def get_with_output(self, session_id: UUID) -> AnalysisSession | None:
+        """Get a session by ID with eager-loaded output data.
+
+        This is an alias for ``get()`` currently, but provides a
+        clear extension point if lazy loading or select-inload is
+        needed in the future.
+        """
+        return await self.get(session_id)
