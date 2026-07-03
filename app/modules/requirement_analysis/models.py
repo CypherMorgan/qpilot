@@ -8,14 +8,14 @@ AI response parser, the service layer, and the export layer.
 from __future__ import annotations
 
 from datetime import datetime
-from enum import Enum
+from enum import StrEnum
 from uuid import UUID
 
 from pydantic import BaseModel, Field
 
 # ── Enums ─────────────────────────────────────────────────────────
 
-class PriorityLevel(str, Enum):
+class PriorityLevel(StrEnum):
     """Priority level for test cases and assessments."""
 
     CRITICAL = "critical"
@@ -24,7 +24,7 @@ class PriorityLevel(str, Enum):
     LOW = "low"
 
 
-class RiskSeverity(str, Enum):
+class RiskSeverity(StrEnum):
     """Severity level for identified risks."""
 
     CRITICAL = "critical"
@@ -33,7 +33,7 @@ class RiskSeverity(str, Enum):
     LOW = "low"
 
 
-class AutomationFeasibility(str, Enum):
+class AutomationFeasibility(StrEnum):
     """How feasible a test scenario is to automate."""
 
     EASY = "easy"
@@ -42,7 +42,7 @@ class AutomationFeasibility(str, Enum):
     NOT_FEASIBLE = "not_feasible"
 
 
-class InputSourceType(str, Enum):
+class InputSourceType(StrEnum):
     """Supported input source types."""
 
     PLAIN_TEXT = "plain_text"

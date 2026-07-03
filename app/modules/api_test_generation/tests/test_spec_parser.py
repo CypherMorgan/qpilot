@@ -154,7 +154,7 @@ class TestOpenApiParser:
 
     def test_parse_swagger_v2_rejected(self, parser):
         """OpenAPI 2.0 (Swagger) should be rejected."""
-        with pytest.raises(ValidationError, match="OpenAPI 2.0"):
+        with pytest.raises(ValidationError, match=r"OpenAPI 2.0"):
             parser.parse('{"swagger": "2.0", "info": {"title": "Test"}, "paths": {}}', "json")
 
     def test_parse_empty_spec(self, parser):

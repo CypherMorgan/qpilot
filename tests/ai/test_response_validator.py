@@ -42,7 +42,7 @@ def test_strip_code_fences_plain_fences() -> None:
 
 def test_parse_valid_json() -> None:
     """Valid JSON is parsed correctly."""
-    content, parsed = parse_json_response(
+    _content, parsed = parse_json_response(
         '{"result": "success", "score": 0.95}',
         _ResultModel,
     )
@@ -73,7 +73,7 @@ def test_parse_json_fails_schema_validation() -> None:
 
 def test_parse_json_with_code_fences() -> None:
     """JSON inside code fences is correctly parsed."""
-    content, parsed = parse_json_response(
+    _content, parsed = parse_json_response(
         '```json\n{"result": "ok", "score": 1.0}\n```',
         _ResultModel,
     )
@@ -83,7 +83,7 @@ def test_parse_json_with_code_fences() -> None:
 
 def test_parse_json_nested() -> None:
     """Nested JSON models parse correctly."""
-    content, parsed = parse_json_response(
+    _content, parsed = parse_json_response(
         '{"name": "test", "data": {"key": "value"}}',
         _NestedModel,
     )

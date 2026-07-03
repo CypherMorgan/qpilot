@@ -3,13 +3,13 @@
 from __future__ import annotations
 
 from datetime import datetime
-from enum import Enum
+from enum import StrEnum
 from uuid import UUID
 
 from pydantic import BaseModel, Field
 
 
-class AnalysisStatus(str, Enum):
+class AnalysisStatus(StrEnum):
     """Status of an analysis session."""
 
     PENDING = "pending"
@@ -18,7 +18,7 @@ class AnalysisStatus(str, Enum):
     FAILED = "failed"
 
 
-class AnalysisType(str, Enum):
+class AnalysisType(StrEnum):
     """Supported analysis types."""
 
     REQUIREMENT_ANALYSIS = "requirement-analysis"
@@ -26,7 +26,7 @@ class AnalysisType(str, Enum):
     FAILURE_ANALYSIS = "failure-analysis"
 
 
-class ArtifactType(str, Enum):
+class ArtifactType(StrEnum):
     """Types of uploaded artifacts."""
 
     REQUIREMENT = "requirement"
