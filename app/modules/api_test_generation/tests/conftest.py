@@ -17,15 +17,20 @@ os.environ.setdefault("AI__PROVIDER", "openrouter")
 os.environ.setdefault("DATABASE_URL", "sqlite+aiosqlite:///:memory:")
 os.environ.setdefault("DATABASE_ECHO", "false")
 
-from typing import Any
-
 import json
 from pathlib import Path
+from typing import Any
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from app.ai import AIRequest, AIResponse, PromptManager, PromptTemplate, ProviderRegistry
+from app.ai import (
+    AIRequest,
+    AIResponse,
+    PromptManager,
+    PromptTemplate,
+    ProviderRegistry,
+)
 from app.ai.models import ProviderMetadata
 from app.ai.models import TokenUsage as UsageMetadata
 from app.modules.api_test_generation.models import OpenApiGenerateRequest

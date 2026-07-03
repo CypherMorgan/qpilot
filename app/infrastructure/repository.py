@@ -44,10 +44,9 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql import Select as _Select
 
-Select = _Select[tuple[Any]]
-
 from app.infrastructure.database import Base
 
+Select = _Select[tuple[Any]]
 T = TypeVar("T", bound=Base)
 
 

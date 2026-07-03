@@ -10,28 +10,34 @@ import { SessionDetailPage } from "@/modules/requirement-analysis/pages/session-
 import { ApiTestGenerationPage } from "@/modules/api-test-generation/pages/generation-page";
 import { ApiTestSessionDetailPage } from "@/modules/api-test-generation/pages/session-detail-page";
 
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <RootLayout />,
-    errorElement: (
-      <ErrorBoundary>
-        <RootLayout />
-      </ErrorBoundary>
-    ),
-    children: [
-      { index: true, element: <HomePage /> },
-      { path: "settings", element: <SettingsPage /> },
-      // Requirement Analysis module
-      { path: "requirements/analyze", element: <RequirementAnalysisPage /> },
-      { path: "requirements/sessions/:sessionId", element: <SessionDetailPage /> },
-      // API Test Generation module
-      { path: "api-tests/analyze", element: <ApiTestGenerationPage /> },
-      { path: "api-tests/sessions/:sessionId", element: <ApiTestSessionDetailPage /> },
-      { path: "*", element: <NotFoundPage /> },
-    ],
-  },
-]);
+// On GitHub Pages the site is at /qpilot/ — match the Vite base path here.
+const basename = import.meta.env.VITE_BASE_PATH || "/";
+
+const router = createBrowserRouter(
+  [
+    {
+      path: "/",
+      element: <RootLayout />,
+      errorElement: (
+        <ErrorBoundary>
+          <RootLayout />
+        </ErrorBoundary>
+      ),
+      children: [
+        { index: true, element: <HomePage /> },
+        { path: "settings", element: <SettingsPage /> },
+        // Requirement Analysis module
+        { path: "requirements/analyze", element: <RequirementAnalysisPage /> },
+        { path: "requirements/sessions/:sessionId", element: <SessionDetailPage /> },
+        // API Test Generation module
+        { path: "api-tests/analyze", element: <ApiTestGenerationPage /> },
+        { path: "api-tests/sessions/:sessionId", element: <ApiTestSessionDetailPage /> },
+        { path: "*", element: <NotFoundPage /> },
+      ],
+    },
+  ],
+  { basename },
+);
 
 export function AppRouter() {
   return <RouterProvider router={router} />;
