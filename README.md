@@ -3,7 +3,12 @@
 **QPilot** is an AI-augmented quality engineering platform that helps QA engineers and SDETs analyze requirements, generate API test suites, and diagnose automation failures — using AI as an accelerator, not a crutch.
 
 > Created by **Cypher Morgan**
-
+![Python](https://img.shields.io/badge/Python-3.12-blue)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.115-green)
+![React](https://img.shields.io/badge/React-18-blue)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)
+![Docker](https://img.shields.io/badge/Docker-Ready-2496ED)
+![License](https://img.shields.io/badge/License-MIT-yellow)
 [![CI](https://github.com/CypherMorgan/qpilot/actions/workflows/ci.yml/badge.svg)](https://github.com/CypherMorgan/qpilot/actions/workflows/ci.yml)
 [![GitHub Pages](https://github.com/CypherMorgan/qpilot/actions/workflows/deploy-pages.yml/badge.svg)](https://cyphermorgan.github.io/qpilot/)
 
@@ -76,27 +81,27 @@ curl -X POST http://localhost:8000/api/v1/openapi/analyze \
 ## Architecture
 
 ```
-┌──────────────────────────────────────────────────────────────┐
-│                    Application Layer                          │
-│  ┌──────────────────────────────────────────────────────────┐│
-│  │  AI Features: Requirement Analysis,                      ││
-│  │  API Test Generation, Failure Analysis (coming)          ││
-│  └────────────────────────┬─────────────────────────────────┘│
-│                           │ uses                             │
-│  ┌────────────────────────▼─────────────────────────────────┐│
-│  │  AI Infrastructure                                       ││
-│  │  ┌──────────────┐  ┌─────────────┐  ┌──────────────────┐││
-│  │  │   Provider    │  │   Prompt    │  │   Response        │││
-│  │  │   Registry    │  │   Manager   │  │   Validator       │││
-│  │  └──────┬───────┘  └─────────────┘  └──────────────────┘││
-│  └─────────┼─────────────────────────────────────────────────┘│
+┌────────────────────────────────────────────────────────────────┐
+│                    Application Layer                           │
+│  ┌──────────────────────────────────────────────────────────┐  │
+│  │  AI Features: Requirement Analysis,                      │  │
+│  │  API Test Generation, Failure Analysis (coming)          │  │
+│  └────────────────────────┬─────────────────────────────────┘  │
+│                           │ uses                               │
+│  ┌────────────────────────▼──────────────────────────────────┐ │
+│  │  AI Infrastructure                                        │ │
+│  │  ┌──────────────┐  ┌─────────────┐  ┌──────────────────┐  │ │
+│  │  │   Provider   │  │   Prompt    │  │   Response       │  │ │
+│  │  │   Registry   │  │   Manager   │  │   Validator      │  │ │
+│  │  └──────┬───────┘  └─────────────┘  └──────────────────┘  │ │
+│  └─────────┼─────────────────────────────────────────────────┘ │
 └────────────┼───────────────────────────────────────────────────┘
              │
 ┌────────────▼───────────────────────────────────────────────────┐
 │                   Infrastructure Layer                         │
-│  ┌──────────────────┐  ┌──────────────────┐                   │
-│  │  OpenRouter       │  │  Ollama          │  (more to come)   │
-│  │  (cloud)          │  │  (local/offline) │                    │
+│  ┌──────────────────┐  ┌──────────────────┐                    │
+│  │  OpenRouter      │  │  Ollama          │  (more to come)    │
+│  │  (cloud)         │  │  (local/offline) │                    │
 │  └──────────────────┘  └──────────────────┘                    │
 │  ┌──────────────────────────────────────────────────────────┐  │
 │  │  PostgreSQL 16 / SQLAlchemy 2.0 / Alembic / FastAPI      │  │
@@ -133,7 +138,7 @@ app/
 ├── modules/                    # Business feature modules
 │   ├── requirement_analysis/   # Requirement → test case generation
 │   └── api_test_generation/    # OpenAPI spec → pytest suite generation
-├── middleware/                  # Request ID, structured logging
+├── middleware/                 # Request ID, structured logging
 ├── config.py                   # Pydantic-settings configuration
 ├── exceptions.py               # Domain exception hierarchy
 ├── logging_.py                 # structlog configuration

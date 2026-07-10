@@ -1,0 +1,53 @@
+/** TanStack Query hooks for the Failure Analysis module. */
+
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import type { AnalysisRequest } from "@/modules/failure-analysis/types";
+import {
+  analyzeFailure,
+  getFailureSession,
+  listFailureSessions,
+} from "@/modules/failure-analysis/services/failure-analysis";
+
+const FAILURE_KEYS = {
+  all: ["failure-analysis"] as const,
+  sessions: (page?: number) => [...FAILURE_KEYS.all, "sessions", page] as const,
+  session: (id: string | undefined) =>
+    [...FAILURE_KEYS.all, "session", id] as const,
+};
+
+/**
+ * Submit failure output for analysis.
+ */
+export function useAnalyzeFailure() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (request: AnalysisRequest) => analyzeFailure(request),
+    onSuccess: () => {
+      // Invalidate session list so it refreshes with the new session
+      queryClient.invalidateQueries({ queryKey: FAILURE_KEYS.sessions() });
+    },
+  });
+}
+
+/**
+ * Fetch a single failure analysis session by ID.
+ */
+export function useFailureSession(sessionId: string | undefined) {
+  return useQuery({
+    queryKey: FAILURE_KEYS.session(sessionId),
+    queryFn: () => getFailureSession(sessionId!),
+    enabled: !!sessionId,
+  });
+}
+
+/**
+ * Fetch a paginated list of failure analysis sessions.
+ */
+export function useFailureSessions(page: number = 1) {
+  return useQuery({
+    queryKey: FAILURE_KEYS.sessions(page),
+    queryFn: () => listFailureSessions(page),
+    staleTime: 30_000,
+  });
+}

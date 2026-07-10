@@ -111,11 +111,17 @@ export function HomePage() {
               status="Live"
             />
           </button>
-          <ModuleCard
-            title="Failure Analysis"
-            description="Analyze failure artifacts with AI-powered root cause detection"
-            status="Coming soon"
-          />
+          <button
+            type="button"
+            onClick={() => navigate(ROUTES.FAILURE_ANALYSIS)}
+            className="group relative w-full rounded-lg border bg-card p-5 text-left transition-colors hover:border-muted-foreground/25"
+          >
+            <ModuleCard
+              title="Failure Analysis"
+              description="Analyze failure artifacts with AI-powered root cause detection"
+              status="Live"
+            />
+          </button>
         </div>
       </section>
     </div>

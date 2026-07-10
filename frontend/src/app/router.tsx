@@ -9,6 +9,8 @@ import { RequirementAnalysisPage } from "@/modules/requirement-analysis/pages/an
 import { SessionDetailPage } from "@/modules/requirement-analysis/pages/session-detail-page";
 import { ApiTestGenerationPage } from "@/modules/api-test-generation/pages/generation-page";
 import { ApiTestSessionDetailPage } from "@/modules/api-test-generation/pages/session-detail-page";
+import { FailureAnalysisPage } from "@/modules/failure-analysis/pages/analysis-page";
+import { FailureSessionDetailPage } from "@/modules/failure-analysis/pages/session-detail-page";
 
 // On GitHub Pages the site is at /qpilot/ — match the Vite base path here.
 const basename = import.meta.env.VITE_BASE_PATH || "/";
@@ -32,6 +34,9 @@ const router = createBrowserRouter(
         // API Test Generation module
         { path: "api-tests/analyze", element: <ApiTestGenerationPage /> },
         { path: "api-tests/sessions/:sessionId", element: <ApiTestSessionDetailPage /> },
+        // Failure Analysis module
+        { path: "failures/analyze", element: <FailureAnalysisPage /> },
+        { path: "failures/sessions/:sessionId", element: <FailureSessionDetailPage /> },
         { path: "*", element: <NotFoundPage /> },
       ],
     },

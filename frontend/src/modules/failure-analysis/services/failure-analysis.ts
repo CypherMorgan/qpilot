@@ -1,0 +1,64 @@
+/** Failure Analysis API service functions. */
+
+import { apiClient } from "@/services/api-client";
+import type {
+  AnalysisRequest,
+  AnalysisResponse,
+  AnalysisSessionListItem,
+} from "@/modules/failure-analysis/types";
+
+interface ApiSuccessResponse<T> {
+  data: T;
+  meta?: Record<string, unknown>;
+}
+
+interface PaginatedResponse<T> {
+  items: T[];
+  total: number;
+}
+
+/**
+ * Submit failure output for AI-powered analysis.
+ */
+export async function analyzeFailure(
+  request: AnalysisRequest,
+): Promise<AnalysisResponse> {
+  const response = await apiClient.post<ApiSuccessResponse<AnalysisResponse>>(
+    "/api/v1/failures/analyze",
+    request,
+  );
+  return response.data.data;
+}
+
+/**
+ * Retrieve a completed failure analysis session by ID.
+ */
+export async function getFailureSession(
+  sessionId: string,
+): Promise<AnalysisResponse> {
+  const response = await apiClient.get<ApiSuccessResponse<AnalysisResponse>>(
+    `/api/v1/failures/sessions/${sessionId}`,
+  );
+  return response.data.data;
+}
+
+/**
+ * List past failure analysis sessions with pagination.
+ */
+export async function listFailureSessions(
+  page: number = 1,
+  pageSize: number = 20,
+): Promise<PaginatedResponse<AnalysisSessionListItem>> {
+  const response = await apiClient.get<
+    ApiSuccessResponse<AnalysisSessionListItem[]>
+  >("/api/v1/failures/sessions", {
+    params: { page, page_size: pageSize },
+  });
+  const meta = response.data.meta as
+    | { pagination: { total: number } }
+    | undefined;
+  return {
+    items: response.data.data,
+    total: meta?.pagination?.total ?? 0,
+  };
+}

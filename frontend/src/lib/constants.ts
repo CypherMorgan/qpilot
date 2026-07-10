@@ -19,7 +19,8 @@ export const ROUTES = {
   REQUIREMENT_SESSION: "/requirements/sessions/:sessionId",
   API_TEST_GENERATION: "/api-tests/analyze",
   API_TEST_SESSION: "/api-tests/sessions/:sessionId",
-  FAILURE_ANALYSIS: "/failures",
+  FAILURE_ANALYSIS: "/failures/analyze",
+  FAILURE_SESSION: "/failures/sessions/:sessionId",
 } as const;
 
 /** Navigation items displayed in the sidebar */
@@ -27,6 +28,7 @@ export const NAV_ITEMS = [
   { label: "Dashboard", path: ROUTES.HOME, icon: "LayoutDashboard" as const },
   { label: "Requirement Analysis", path: ROUTES.REQUIREMENT_ANALYSIS, icon: "FileText" as const },
   { label: "API Test Generation", path: ROUTES.API_TEST_GENERATION, icon: "FlaskConical" as const },
+  { label: "Failure Analysis", path: ROUTES.FAILURE_ANALYSIS, icon: "Bug" as const },
   { label: "Settings", path: ROUTES.SETTINGS, icon: "Settings" as const },
 ] as const;
 
