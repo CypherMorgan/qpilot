@@ -53,7 +53,7 @@ export function SettingsPage() {
       <section>
         <h2 className="text-base font-semibold">About</h2>
         <div className="mt-2 space-y-1 text-sm text-muted-foreground">
-          <p>QPilot v0.1.0</p>
+          <p>QPilot v0.4.1</p>
           <p>AI-Powered Quality Engineering Platform</p>
         </div>
       </section>

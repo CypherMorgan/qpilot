@@ -100,7 +100,7 @@ class AppConfig(BaseSettings):
     """Enable debug mode. Set DEBUG=true."""
 
     app_name: str = "QPilot"
-    app_version: str = "0.1.0"
+    app_version: str = "0.4.1"
 
     log_level: str = "INFO"
     """Logging level: DEBUG, INFO, WARNING, ERROR."""
