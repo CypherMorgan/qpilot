@@ -4,12 +4,15 @@ Renders the complete analysis result with root causes, suggested
 fixes, affected components, and other sections in a structured layout.
 */
 
+import { useState, useCallback } from "react";
 import {
   Bug,
+  Check,
   Copy,
   Cpu,
   Download,
   FileCode,
+  FileJson,
   FlaskConical,
   Lightbulb,
   ShieldAlert,
@@ -19,6 +22,13 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { SectionCard } from "@/components/section-card";
+import { cn } from "@/lib/utils";
+import {
+  copyToClipboard,
+  downloadAsFile,
+  formatAsJson,
+  formatAsMarkdown,
+} from "@/modules/failure-analysis/utils/export";
 import type {
   AffectedComponent,
   FailureAnalysisResult,
@@ -288,6 +298,30 @@ export function AnalysisSummary({
   totalTokens,
   latencyMs,
 }: AnalysisSummaryProps) {
+  const [showExportMenu, setShowExportMenu] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = useCallback(async () => {
+    const text = formatAsMarkdown(result);
+    await copyToClipboard(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }, [result]);
+
+  const handleExportMarkdown = useCallback(() => {
+    const content = formatAsMarkdown(result);
+    const date = new Date().toISOString().slice(0, 10);
+    downloadAsFile(content, `failure-analysis-${date}.md`, "text/markdown");
+    setShowExportMenu(false);
+  }, [result]);
+
+  const handleExportJson = useCallback(() => {
+    const content = formatAsJson(result);
+    const date = new Date().toISOString().slice(0, 10);
+    downloadAsFile(content, `failure-analysis-${date}.json`, "application/json");
+    setShowExportMenu(false);
+  }, [result]);
+
   return (
     <div className="space-y-6">
       {/* Summary bar */}
@@ -299,14 +333,55 @@ export function AnalysisSummary({
               {result.input_summary}
             </p>
           </div>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm">
-              <Download className="mr-2 h-4 w-4" />
-              Export
-            </Button>
-            <Button variant="outline" size="sm">
-              <Copy className="mr-2 h-4 w-4" />
-              Copy
+          <div className="relative flex gap-2">
+            {/* Export button with dropdown */}
+            <div className="relative">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowExportMenu(!showExportMenu)}
+                onBlur={() => setTimeout(() => setShowExportMenu(false), 200)}
+              >
+                <Download className="mr-2 h-4 w-4" />
+                Export
+              </Button>
+              {showExportMenu && (
+                <div className="absolute right-0 top-full z-50 mt-1 w-48 rounded-lg border bg-popover p-1 shadow-md">
+                  <button
+                    type="button"
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={handleExportMarkdown}
+                    className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-accent"
+                  >
+                    <FileCode className="h-4 w-4" />
+                    Markdown (.md)
+                  </button>
+                  <button
+                    type="button"
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={handleExportJson}
+                    className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-accent"
+                  >
+                    <FileJson className="h-4 w-4" />
+                    JSON (.json)
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Copy button */}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleCopy}
+              className={cn(copied && "border-emerald-500 text-emerald-600")}
+            >
+              {copied ? (
+                <Check className="mr-2 h-4 w-4" />
+              ) : (
+                <Copy className="mr-2 h-4 w-4" />
+              )}
+              {copied ? "Copied!" : "Copy"}
             </Button>
           </div>
         </div>

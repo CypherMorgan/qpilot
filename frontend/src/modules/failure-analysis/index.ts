@@ -1,5 +1,12 @@
 /** Failure Analysis Module — barrel exports. */
 
+export {
+  copyToClipboard,
+  downloadAsFile,
+  formatAsJson,
+  formatAsMarkdown,
+} from "./utils/export";
+
 export type {
   AnalysisRequest,
   AnalysisResponse,
