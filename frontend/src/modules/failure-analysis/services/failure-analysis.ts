@@ -24,7 +24,7 @@ export async function analyzeFailure(
   request: AnalysisRequest,
 ): Promise<AnalysisResponse> {
   const response = await apiClient.post<ApiSuccessResponse<AnalysisResponse>>(
-    "/api/v1/failures/analyze",
+    "/failures/analyze",
     request,
   );
   return response.data.data;
@@ -37,7 +37,7 @@ export async function getFailureSession(
   sessionId: string,
 ): Promise<AnalysisResponse> {
   const response = await apiClient.get<ApiSuccessResponse<AnalysisResponse>>(
-    `/api/v1/failures/sessions/${sessionId}`,
+    `/failures/sessions/${sessionId}`,
   );
   return response.data.data;
 }
@@ -51,7 +51,7 @@ export async function listFailureSessions(
 ): Promise<PaginatedResponse<AnalysisSessionListItem>> {
   const response = await apiClient.get<
     ApiSuccessResponse<AnalysisSessionListItem[]>
-  >("/api/v1/failures/sessions", {
+  >("/failures/sessions", {
     params: { page, page_size: pageSize },
   });
   const meta = response.data.meta as
