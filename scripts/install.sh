@@ -28,7 +28,7 @@ set -euo pipefail
 REPO_URL="https://github.com/CypherMorgan/qpilot.git"
 REPO_BRANCH="master"
 INSTALL_DIR="${QPILOT_HOME:-$HOME/.qpilot}"
-QPILOT_VERSION="0.4.1"
+QPILOT_VERSION="0.4.2"
 
 # Colors for output
 RED='\033[0;31m'
