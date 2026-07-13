@@ -322,30 +322,22 @@ docs/                    # ADRs & guides`}</code></pre>
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2">
-          {resourceLinks.map((link) => {
-            const Icon = link.icon;
-            return (
-              <a
-                key={link.label}
-                href={link.local ? undefined : link.href}
-                target={link.local ? undefined : "_blank"}
-                rel={link.local ? undefined : "noopener noreferrer"}
-                onClick={(e) => {
-                  if (!link.local) return;
-                  e.preventDefault();
-                  navigate(link.href);
-                }}
-                className={cn(
-                  "flex items-center gap-3 rounded-xl border bg-card p-4 text-sm transition-all",
-                  "hover:border-primary/30 hover:shadow-sm",
-                )}
-              >
-                <Icon className="h-5 w-5 shrink-0 text-muted-foreground" />
-                <span className="flex-1 font-medium">{link.label}</span>
-                <ExternalLink className="h-3.5 w-3.5 shrink-0 text-muted-foreground/50" />
-              </a>
-            );
-          })}
+          {resourceLinks.map(({ label, href, icon: Icon }) => (
+            <a
+              key={label}
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={cn(
+                "flex items-center gap-3 rounded-xl border bg-card p-4 text-sm transition-all",
+                "hover:border-primary/30 hover:shadow-sm",
+              )}
+            >
+              <Icon className="h-5 w-5 shrink-0 text-muted-foreground" />
+              <span className="flex-1 font-medium">{label}</span>
+              <ExternalLink className="h-3.5 w-3.5 shrink-0 text-muted-foreground/50" />
+            </a>
+          ))}
         </div>
       </section>
 
