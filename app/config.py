@@ -105,7 +105,7 @@ class AppConfig(BaseSettings):
     log_level: str = "INFO"
     """Logging level: DEBUG, INFO, WARNING, ERROR."""
 
-    cors_origins: str = "http://localhost:5173"
+    cors_origins: str = "http://localhost:3000"
     """Allowed CORS origins (comma-separated string in .env).
 
     pydantic-settings treats ``str`` as a simple type and passes the raw env

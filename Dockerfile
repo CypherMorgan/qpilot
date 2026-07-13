@@ -81,6 +81,7 @@ COPY --from=builder /install /usr/local
 COPY app/ app/
 COPY alembic/ alembic/
 COPY alembic.ini .
+COPY prompts/ prompts/
 
 # ── Copy entrypoint script ───────────────────────────────────
 COPY docker-entrypoint.sh /usr/local/bin/

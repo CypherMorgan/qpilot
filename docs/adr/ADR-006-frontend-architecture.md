@@ -310,8 +310,8 @@ docker-compose.yml
 ```
 
 **Development flow:**
-- `cd frontend && npm run dev` — Vite dev server on `:5173`
-- Backend CORS already allows `http://localhost:5173`
+- `cd frontend && npm run dev` — Vite dev server on `:3000`
+- Backend CORS already allows `http://localhost:3000`
 - `docker compose up --build` — full production-like stack
 
 **Production flow:**

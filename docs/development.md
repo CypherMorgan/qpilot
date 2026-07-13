@@ -49,7 +49,7 @@ npm install
 npm run dev
 ```
 
-The Vite dev server runs at **http://localhost:5173** with HMR enabled.
+The Vite dev server runs at **http://localhost:3000** with HMR enabled.
 The backend's CORS configuration already allows this origin.
 
 ---
