@@ -29,9 +29,9 @@ const mainNav: NavItem[] = [
 ];
 
 const moduleNav: NavItem[] = [
-  { label: "Requirement Analysis", path: ROUTES.REQUIREMENT_ANALYSIS, icon: FileJson, disabled: true },
-  { label: "API Test Generation", path: ROUTES.API_TEST_GENERATION, icon: FlaskConical, disabled: false },
-  { label: "Failure Analysis", path: ROUTES.FAILURE_ANALYSIS, icon: Bug, disabled: true },
+  { label: "Requirement Analysis", path: ROUTES.REQUIREMENT_ANALYSIS, icon: FileJson },
+  { label: "API Test Generation", path: ROUTES.API_TEST_GENERATION, icon: FlaskConical },
+  { label: "Failure Analysis", path: ROUTES.FAILURE_ANALYSIS, icon: Bug },
 ];
 
 const bottomNav: NavItem[] = [
