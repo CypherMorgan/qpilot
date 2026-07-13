@@ -19,7 +19,9 @@
 
 ---
 
-## What's New in v0.4.1 — Export & Share
+## What's New
+
+### v0.4.1 — Export & Share
 
 - **Export Failure Analysis reports** — Download as Markdown (.md) or JSON (.json) with one click
 - **Copy to clipboard** — Copy the full Markdown report for pasting into PRs, tickets, or Slack
@@ -39,27 +41,39 @@ See the full [Roadmap](#roadmap) below for the complete release history.
 
 ## Quick Start
 
-### Prerequisites
+Choose one of two ways:
 
-- [Docker Desktop](https://docs.docker.com/desktop/)
-- [Ollama](https://ollama.com/) (recommended for local AI, or use OpenRouter)
-
-### 1. Clone & configure
+### ⚡ One-command install (Linux / macOS)
 
 ```bash
-git clone https://github.com/CypherMorgan/qpilot.git
-cd qpilot
-cp .env.example .env
+curl -fsSL https://raw.githubusercontent.com/CypherMorgan/qpilot/main/scripts/install.sh | bash
 ```
 
-Edit `.env` to choose your AI provider:
+**What it does (visible step-by-step):**
+1. Checks prerequisites (Python 3.11+, Node.js, git)
+2. Clones the repo into `~/.qpilot`
+3. Creates a Python virtual environment and installs all dependencies
+4. Builds the frontend SPA
+5. Sets up SQLite database (zero config — no PostgreSQL needed)
+6. Creates a `qpilot` shell alias and a `qpilot-uninstall` alias
 
-| Provider | `.env` settings | Notes |
-|---|---|---|
-| **Ollama** (local) | `AI__PROVIDER=ollama`<br>`AI__OLLAMA_MODEL=qwen3:1.7b` | Free, private, runs on your machine. Pull the model first: `ollama pull qwen3:1.7b` |
-| **OpenRouter** (cloud) | `AI__PROVIDER=openrouter`<br>`AI__OPENROUTER_API_KEY=sk-...` | Access to GPT-4o, Claude, Gemini, etc. Get a key at [openrouter.ai/keys](https://openrouter.ai/keys) |
+**Start:** `qpilot` then open http://localhost:8000
 
-### 2. Start everything
+**Uninstall:** `qpilot-uninstall` — removes venv, files, aliases, nothing left behind.
+
+### ⚡ One-command install (Windows)
+
+```powershell
+irm https://raw.githubusercontent.com/CypherMorgan/qpilot/main/scripts/install.ps1 | iex
+```
+
+Or double-click `%USERPROFILE%\.qpilot\start.bat` after installation.
+
+**Uninstall:** Double-click `%USERPROFILE%\.qpilot\uninstall.bat`
+
+---
+
+### Docker (alternative)
 
 ```bash
 docker compose up --build
@@ -175,6 +189,10 @@ prompts/                        # AI prompt templates (versioned Markdown)
 │       ├── system.md           # System instructions (Jinja2)
 │       └── examples.md         # Few-shot examples
 └── shared/v1/                  # Shared prompt components
+
+scripts/
+├── install.sh                  # Linux/macOS install & uninstall
+└── install.ps1                 # Windows install & uninstall
 
 docs/
 ├── adr/                        # Architecture Decision Records
