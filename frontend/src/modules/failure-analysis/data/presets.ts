@@ -203,8 +203,8 @@ Branch: feature/add-ml-models
 E   AssertionError: assert None is True
 
 ─── Root cause ─────────────────────────────────────────────────────
-src/config.py uses `sys.version_info` to conditionally enable
-features. The `ml_models_enabled` flag requires Python ≥ 3.12:
+src/config.py uses \`sys.version_info\` to conditionally enable
+features. The \`ml_models_enabled\` flag requires Python ≥ 3.12:
 
   src/config.py:45
       @property
