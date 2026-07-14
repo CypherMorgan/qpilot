@@ -371,11 +371,11 @@ kill problematic features — all without redeploying.
 
 ### Targeting Rule
 - User-level targeting based on attributes:
-  - `user.id`, `user.email`, `user.plan` (free/pro/enterprise)
-  - `user.country`, `user.region`, `user.custom_attributes.*`
+  - \`user.id\`, \`user.email\`, \`user.plan\` (free/pro/enterprise)
+  - \`user.country\`, \`user.region\`, \`user.custom_attributes.*\`
 - Segment-based targeting (match any/all):
-  - `country IN (US, CA, GB)` AND `plan == enterprise`
-  - `email CONTAINS @acme.com`
+  - \`country IN (US, CA, GB)\` AND \`plan == enterprise\`
+  - \`email CONTAINS @acme.com\`
 - Percentage rollout within a segment:
   - e.g., roll out to 25% of enterprise users in US/CA
 
@@ -387,14 +387,14 @@ kill problematic features — all without redeploying.
 
 ## Flag Evaluation Pipeline
 
-```
+~~~text
 Request: { user, context }
   → Environment defaults (dev/test/staging/prod)
   → Kill switch check → return override value if active
   → Targeting rules (first match wins, ordered by priority)
   → Percentage rollout (consistent bucketing via user_id hash mod 100)
   → Fallback to default value
-```
+~~~
 
 ## SDK Delivery
 
