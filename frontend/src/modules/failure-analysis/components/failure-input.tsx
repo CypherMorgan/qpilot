@@ -9,7 +9,6 @@ import {
   AlertCircle,
   Bug,
   FileText,
-  FlaskConical,
   Hammer,
   Package,
   Terminal,
@@ -21,7 +20,6 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { InputSourceType } from "@/modules/failure-analysis/types";
 import { FAILURE_PRESETS } from "@/modules/failure-analysis/data/presets";
-import type { FailurePreset } from "@/modules/failure-analysis/data/presets";
 
 interface FailureInputProps {
   onSubmit: (content: string, sourceType: InputSourceType) => void;
