@@ -5,11 +5,23 @@ output with source type selection and optional configuration fields.
 */
 
 import { useState } from "react";
-import { AlertCircle, Bug, FileText, Terminal } from "lucide-react";
+import {
+  AlertCircle,
+  Bug,
+  FileText,
+  FlaskConical,
+  Hammer,
+  Package,
+  Terminal,
+  Timer,
+  Wifi,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { InputSourceType } from "@/modules/failure-analysis/types";
+import { FAILURE_PRESETS } from "@/modules/failure-analysis/data/presets";
+import type { FailurePreset } from "@/modules/failure-analysis/data/presets";
 
 interface FailureInputProps {
   onSubmit: (content: string, sourceType: InputSourceType) => void;
@@ -38,6 +50,15 @@ const SOURCE_OPTIONS: {
     icon: <Bug className="h-4 w-4" />,
   },
 ];
+
+const PRESET_ICONS: Record<string, React.ReactNode> = {
+  assertion_error: <Bug className="h-4 w-4" />,
+  timeout: <Timer className="h-4 w-4" />,
+  dependency: <Package className="h-4 w-4" />,
+  environment: <Terminal className="h-4 w-4" />,
+  configuration: <Wifi className="h-4 w-4" />,
+  compilation: <Hammer className="h-4 w-4" />,
+};
 
 export function FailureInput({
   onSubmit,
@@ -94,6 +115,37 @@ export function FailureInput({
             <span className="font-medium">{option.label}</span>
           </button>
         ))}
+      </div>
+
+      {/* Preset selector */}
+      <div>
+        <p className="mb-2 text-xs font-medium text-muted-foreground">
+          Try an example failure
+        </p>
+        <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-4">
+          {FAILURE_PRESETS.map((preset) => (
+            <button
+              key={preset.id}
+              type="button"
+              onClick={() => {
+                setContent(preset.content);
+                setSourceType(preset.sourceType);
+                setTitle(preset.title);
+              }}
+              className={cn(
+                "flex items-center gap-2 rounded-lg border px-2.5 py-2 text-left text-xs transition-colors",
+                content === preset.content
+                  ? "border-primary/50 bg-primary/5"
+                  : "border-border/60 hover:border-muted-foreground/30 hover:bg-muted/30",
+              )}
+            >
+              <span className="shrink-0 text-muted-foreground">
+                {PRESET_ICONS[preset.category] ?? <Bug className="h-3.5 w-3.5" />}
+              </span>
+              <span className="truncate font-medium">{preset.title}</span>
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Failure content text area */}
