@@ -70,40 +70,60 @@ Timeout: 30s
 [TIMEOUT] ❌ Job terminated after 30s`,
   },
   {
-    id: "missing-dependency",
-    title: "Missing Dependency",
-    description: "A Python module not found during test collection",
-    category: "dependency",
+    id: "migration-conflict",
+    title: "Database Migration Conflict",
+    description: "Alembic revision conflict from parallel branches",
+    category: "environment",
     sourceType: "ci_log",
-    content: `ERROR collecting tests/unit/test_ml_pipeline.py
-ModuleNotFoundError: No module named 'tensorflow'
+    content: `ERROR: Alembic migration chain has a conflict
 
 ─── CI run details ─────────────────────────────────────────────────
-Job: unit-tests (py3.11)
+Job: migrate-and-test
 Runner: ubuntu-latest
-Trigger: push to feature/ml-refactor
+Branch: merge-feature/flat-tables into main
+Step: alembic upgrade head
 
-─── Pip freeze (relevant) ──────────────────────────────────────────
-numpy==1.26.4
-pandas==2.2.1
-scikit-learn==1.5.0
-torch==2.3.0
-# tensorflow is MISSING
+─── Error output ───────────────────────────────────────────────────
+alembic.util.exc.CommandError:
+  Multiple branches in revision path detected.
 
-─── requirements.txt ───────────────────────────────────────────────
-# Found in repo root, but tensorflow only listed under [ml] extra
-# Install with: pip install -e .[ml]
+  Current revision: 9a4b8f03e1d2 (head of branch A)
+  Also at revision: 7c2d1a5b9f3e (head of branch B)
 
-─── Error details ──────────────────────────────────────────────────
-tests/unit/test_ml_pipeline.py:3: in <module>
-    from tensorflow.keras.models import load_model
-ModuleNotFoundError: No module named 'tensorflow'
+  These are the diverged revisions:
 
-─── CI step log ────────────────────────────────────────────────────
-$ pip install -e .
-  Successfully installed qpilot-0.4.0
-$ pytest tests/unit/test_ml_pipeline.py -v
-  ERROR: ModuleNotFoundError`,
+  +---> 7c2d1a5b9f3e (add_user_preferences_table)
+  |     2026-07-10 14:30:00 — jane.doe
+
+  |     9a4b8f03e1d2 (add_audit_log_indexes)
+  |     2026-07-10 15:45:00 — john.smith
+  |/
+  |
+  +---> 3e8f2c1a4b6d (previous_common_ancestor)
+        2026-07-09 11:00:00 — jane.doe
+
+─── Migration history ──────────────────────────────────────────────
+$ alembic history
+  <base> → 1a2b3c (init)
+  1a2b3c → 2d3e4f (add_users_table)
+  2d3e4f → 3e8f2c (add_projects_table)
+  │
+  ├── 3e8f2c → 9a4b8f (add_audit_log_indexes)  ← branch A (your PR)
+  │
+  └── 3e8f2c → 7c2d1a (add_user_preferences_table)  ← branch B (merged first)
+
+─── Repo state ─────────────────────────────────────────────────────
+$ git log --oneline --graph -10
+  *   7a3f2b1 (HEAD -> merge-feature/flat-tables) Merge branch 'main'
+  |\\
+  | * 5c8d2e3 (main) Add user preferences table migration
+  * | 4f1a2b3 Add audit log indexes migration
+  |/
+  o 9b7c2d1 Previous common ancestor
+
+─── Resolution ────────────────────────────────────────────────────
+  $ alembic merge -m "merge_heads" 9a4b8f 7c2d1a
+  $ alembic upgrade head  # should succeed after merge`,
   },
   {
     id: "flaky-test",
@@ -141,47 +161,61 @@ E   +  where 0 = <MagicMock name='smtp.sendmsg' call_count>.call_count
   • Suspected: SMTP mock cleanup races with async fixture teardown`,
   },
   {
-    id: "type-error",
-    title: "Type Error",
-    description: "A TypeError caused by an unexpected None value",
-    category: "assertion_error",
-    sourceType: "stack_trace",
-    content: `FAILED tests/unit/test_data_processor.py::test_process_user_data - TypeError: 'NoneType' object is not subscriptable
+    id: "crashloop-backoff",
+    title: "K8s CrashLoopBackOff",
+    description: "Container crashes on startup in staging cluster",
+    category: "environment",
+    sourceType: "ci_log",
+    content: `STATUS: CrashLoopBackOff — pod qpilot-api-7d9f8c6b4-abcde
 
-─── Test ───────────────────────────────────────────────────────────
-tests/unit/test_data_processor.py:42: in test_process_user_data
-    result = processor.process(user_data)
-                                        ^
+─── Cluster context ────────────────────────────────────────────────
+Cluster: qpilot-staging (EKS us-east-1)
+Namespace: qpilot-app
+Deployment: qpilot-api (replicas: 3)
+Image: 123456789012.dkr.ecr.us-east-1.amazonaws.com/qpilot-api:0.4.0
 
-─── Stack trace ────────────────────────────────────────────────────
-  File "/workspace/app/src/data_processor.py:85", in process
-    user_id = record["user"]["id"]
-              ~~~~~~^^^^^^
-TypeError: 'NoneType' object is not subscriptable
+─── Pod events ─────────────────────────────────────────────────────
+  $ kubectl describe pod qpilot-api-7d9f8c6b4-abcde
 
-─── Relevant code ──────────────────────────────────────────────────
-src/data_processor.py:85
-    83  def process(self, records: list[dict]) -> list[ProcessedUser]:
-    84      for record in records:
---> 85          user_id = record["user"]["id"]
-    86          name = record["user"].get("name", "Unknown")
-    87          processed.append(ProcessedUser(id=user_id, name=name))
+  Events:
+    Type     Reason     Age    From               Message
+    ----     ------     ----   ----               -------
+    Warning  BackOff    2m     kubelet            Back-off restarting
+    Warning  CrashLoop  3m     kubelet            pod crashed 5 times
+    Normal   Pulled     3m     kubelet            Successfully pulled image
+    Normal   Created    3m     kubelet            Created container api
+    Normal   Started    3m     kubelet            Started container
 
-─── Input record that caused the crash ─────────────────────────────
-    {
-      "id": "rec_789",
-      "user": null,              # <-- Expected dict, got null
-      "timestamp": "2026-07-14T10:00:00Z"
-    }
+─── Container logs (last crash) ────────────────────────────────────
+  $ kubectl logs --previous qpilot-api-7d9f8c6b4-abcde
 
-─── Test data fixture ──────────────────────────────────────────────
-tests/unit/test_data_processor.py:12:
-    @pytest.fixture
-    def user_data():
-        return [
-            {"id": "rec_001", "user": {"id": "u1", "name": "Alice"}},
-            {"id": "rec_789", "user": None},  # ← Missing null guard
-        ]`,
+  [2026-07-14 11:02:15] INFO: Starting QPilot API v0.4.0
+  [2026-07-14 11:02:15] INFO: Connecting to database...
+  [2026-07-14 11:02:15] ERROR: Could not connect to database
+    sqlalchemy.exc.OperationalError: (psycopg2.OperationalError)
+      connection to server at "postgres.staging.svc.cluster.local:5432"
+      failed: could not translate host name to address
+
+  [2026-07-14 11:02:15] ERROR: Startup checks failed. Exiting.
+  [2026-07-14 11:02:15] INFO: Shutting down gracefully...
+
+─── Service discovery check ────────────────────────────────────────
+  $ kubectl get svc -n qpilot-infra postgres
+  NAME       TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)
+  postgres   ClusterIP   10.100.24.56  <none>        5432/TCP
+
+  $ kubectl exec -it temp-pod -- nslookup postgres.qpilot-infra.svc.cluster.local
+  Server:    10.100.0.10
+  Address:   10.100.0.10#53
+  ** server can't find postgres.qpilot-infra.svc.cluster.local: NXDOMAIN
+
+─── Root cause ─────────────────────────────────────────────────────
+  The pod is looking up postgres.staging.svc.cluster.local but the
+  service is in the qpilot-infra namespace — should be:
+    postgres.qpilot-infra.svc.cluster.local
+
+  Fix: update DATABASE_URL in ConfigMap to use the correct namespace
+    postgresql://user:pass@postgres.qpilot-infra.svc.cluster.local:5432/qpilot`,
   },
   {
     id: "env-mismatch",
@@ -316,5 +350,191 @@ $ npm run build
 
 src/components/DataGrid.tsx:124:18 - error TS2322: ...
   ✗ Build failed after 12.4s`,
+  },
+  {
+    id: "docker-pull-limit",
+    title: "Docker Pull Rate Limit",
+    description: "Docker Hub anonymous rate limit hit in CI",
+    category: "environment",
+    sourceType: "ci_log",
+    content: `ERROR: build step 1 — docker pull — failed
+
+─── CI run details ─────────────────────────────────────────────────
+Job: build-and-push
+Runner: ubuntu-latest
+Step: docker compose build
+Time: 2026-07-14 14:22:00 UTC
+
+─── Error output ───────────────────────────────────────────────────
+  $ docker pull python:3.12-slim
+
+  3.12-slim: Pulling from library/python
+  a0b1c2d3e4f5: Waiting
+  ...
+  error: denied: requested access to the resource is denied
+  error: pull access denied for python:3.12-slim
+  repository does not exist or may require 'docker login'
+
+─── Docker Hub rate limit info ─────────────────────────────────────
+  Docker Hub anonymous rate limit:
+    • 100 pulls per 6 hours per IP address
+    • After limit: HTTP 429 / "denied: requested access..."
+
+  Current account: anonymous (no credentials configured)
+  Pulls in window: 97 / 100 (estimated)
+
+  Affected images in this build:
+    • python:3.12-slim (base image)
+    • node:22-alpine (frontend builder)
+    • postgres:16 (test service)
+
+─── CI agent IP ────────────────────────────────────────────────────
+  Runner IP: 20.84.123.45 (shared GitHub Actions runner)
+  Note: GitHub Actions runners share IP ranges with other
+  organizations — rate limits are easily exhausted.
+
+─── Suggested fixes ────────────────────────────────────────────────
+  Option 1: Add Docker Hub credentials to CI secrets
+    $ echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+    → Authenticated users get 200 pulls/6h
+
+  Option 2: Use a pull-through cache (ECR / GCR / Docker Registry Mirror)
+    → Recommended for team CI: set up ECR pull-through cache for Docker Hub
+
+  Option 3: Pin images to a private registry with retagged copies
+    → Copy commonly used images to ECR/GCR and reference those`,
+  },
+  {
+    id: "ssl-cert-expired",
+    title: "SSL Certificate Expired",
+    description: "Expired TLS cert breaks staging integration tests",
+    category: "configuration",
+    sourceType: "ci_log",
+    content: `FAILED tests/integration/test_webhook_receiver.py::test_receive_stripe_webhook - SSLError: certificate expired
+
+─── CI run details ─────────────────────────────────────────────────
+Job: integration-tests
+Runner: ubuntu-latest
+Target: https://staging.example.com
+Timestamp: 2026-07-14 09:15:00 UTC
+
+─── Error trace ────────────────────────────────────────────────────
+  tests/integration/test_webhook_receiver.py:42: in test_receive_stripe_webhook
+    response = httpx.post(
+              ^^^^^^^^^^^^
+  httpx._exceptions.ConnectError: [SSL: CERTIFICATE_VERIFY_FAILED]
+    certificate verify failed: certificate has expired
+
+─── SSL certificate details ────────────────────────────────────────
+  $ openssl s_client -connect staging.example.com:443 -servername staging.example.com 2>&1 | openssl x509 -noout -text
+
+  Certificate:
+      Subject: CN = *.example.com
+      Issuer:  CN = R3, O = Let's Encrypt
+      Validity:
+          Not Before: Jul 14 00:00:00 2025 GMT
+          Not After:  Jul 12 00:00:00 2026 GMT  ← EXPIRED 2 days ago
+      Subject Alt Name: DNS:*.example.com, DNS:example.com
+
+─── Certificate expiry check across all services ───────────────────
+  Service                        | Expiry         | Status
+  ───────────────────────────────|───────────────|────────
+  *.example.com (staging)        | 2026-07-12    | ❌ EXPIRED
+  *.example.com (production)     | 2026-09-15    | ✅ OK
+  api.stripe.com (external call) | 2027-03-20    | ✅ OK
+
+─── Certificate issuer ─────────────────────────────────────────────
+  Issued by: Let's Encrypt (R3)
+  Auto-renewal: managed by cert-manager in EKS
+  cert-manager pod status:
+    $ kubectl get pods -n cert-manager
+    NAME                                       READY   STATUS
+    cert-manager-cainjector-7d9f8c6b4-abcde    1/1     Running
+    cert-manager-webhook-5e4f2a1b3c-xyz78      1/1     Running
+    cert-manager-6b8f2c1a4d-efg45              1/1     Running
+
+    $ kubectl get certificate -n qpilot-infra
+    NAME              READY   REASON
+    staging-tls       False   ✗ CertificateExpired  ← cert-manager failed to renew
+    production-tls    True    ✓ Ready
+
+─── cert-manager logs ──────────────────────────────────────────────
+  $ kubectl logs -n cert-manager deploy/cert-manager --tail=20
+  W0714 09:00:00.123456     1 controller.go:117] Certificate "staging-tls"
+    is expired. Certificate not renewed, check:
+    - DNS-01 challenge failed: no Route53 credentials found
+    - Check Secret "route53-credentials" in namespace cert-manager
+
+  → Route53 credentials Secret was deleted during namespace cleanup`,
+  },
+  {
+    id: "secrets-expired",
+    title: "Secrets Rotation Failure",
+    description: "Expired AWS credentials break CI deployment step",
+    category: "environment",
+    sourceType: "ci_log",
+    content: `ERROR: Failed to deploy — AWS SDK could not authenticate
+
+─── CI run details ─────────────────────────────────────────────────
+Job: deploy-to-staging
+Runner: qpilot-self-hosted (EC2)
+Step: aws eks update-kubeconfig
+Trigger: push to main (merged PR #842)
+Timestamp: 2026-07-14 16:30:00 UTC
+
+─── Error output ───────────────────────────────────────────────────
+  $ aws sts get-caller-identity
+
+  An error occurred (ExpiredToken) when calling the GetCallerIdentity
+  operation: The security token included in the request is expired
+
+  Current IAM role: arn:aws:iam::123456789012:role/qpilot-ci-role
+  Session expiry: 2026-07-14 12:00:00 UTC (expired 4h 30m ago)
+
+─── CI pipeline timeline ───────────────────────────────────────────
+  Step                          | Duration | Status
+  ──────────────────────────────|──────────|───────
+  Checkout                      | 12s      | ✅
+  Install dependencies          | 45s      | ✅
+  Run tests                     | 3m 20s   | ✅
+  Build Docker image            | 2m 10s   | ✅
+  Push to ECR                   | 35s      | ✅
+  Configure AWS credentials ⚠  | 2s       | ✅ (refreshes at start)
+  Update kubeconfig             | 5s       | ❌ ExpiredToken
+  Deploy to EKS                 | —        | ⏭ skipped
+
+  Total time: 7m 4s — failed at 6m 29s
+
+─── Credential chain investigation ─────────────────────────────────
+  $ aws sts assume-role --role-arn arn:aws:iam::...:role/qpilot-ci-role
+
+  Credentials used were generated by GitHub Actions OIDC:
+    • Role: qpilot-ci-role
+    • Max session duration: 5h (configured in IAM)
+    • Actual session duration before use: 4h 30m
+
+  OIDC provider: token.actions.githubusercontent.com
+  Audience: sts.amazonaws.com
+
+─── GitHub Actions OIDC config ─────────────────────────────────────
+  .github/workflows/deploy.yml:
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: arn:aws:iam::123456789012:role/qpilot-ci-role
+        role-session-name: qpilot-deploy-${{ github.run_id }}
+        aws-region: us-east-1
+        role-duration-seconds: 5400  # ← 1.5h (session duration 90 min)
+
+  → The CI workflow sets role-duration-seconds to 5400 (1.5h), but the
+    actual pipeline run takes 6.5h due to a long test suite & build queue.
+    The credentials expire before the deploy step runs.
+
+─── Fix ─────────────────────────────────────────────────────────────
+  Increase role-duration-seconds to 28800 (8h) in deploy.yml:
+    role-duration-seconds: 28800
+  Also set max session duration to 12h on the IAM role:
+    aws iam update-role --role-name qpilot-ci-role --max-session-duration 43200
+  Or use a separate shorter-lived role for the build vs deploy steps`,
   },
 ];
