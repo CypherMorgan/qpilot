@@ -23,7 +23,7 @@ param([switch]$Uninstall)
 $RepoUrl     = "https://github.com/CypherMorgan/qpilot.git"
 $Branch      = "master"
 $InstallDir  = if ($env:QPILOT_HOME) { $env:QPILOT_HOME } else { "$env:USERPROFILE\.qpilot" }
-$Version     = "0.4.3"
+$Version     = "0.4.5"
 
 # ── Colors (PowerShell 5+ compatible) ───────────────────────────────────────
 $Host.UI.RawUI.ForegroundColor = "White"

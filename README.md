@@ -3,7 +3,7 @@
 **QPilot** is an AI-augmented quality engineering platform that helps QA engineers and SDETs analyze requirements, generate API test suites, and diagnose automation failures — using AI as an accelerator, not a crutch.
 
 > Created by **Cypher Morgan**
-![Version](https://img.shields.io/badge/version-0.4.3-blue)
+![Version](https://img.shields.io/badge/version-0.4.5-blue)
 ![Python](https://img.shields.io/badge/Python-3.12-blue)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.115-green)
 ![React](https://img.shields.io/badge/React-18-blue)
@@ -20,6 +20,18 @@
 ---
 
 ## What's New
+
+### v0.4.5 — API Test Gen Presets
+
+- **5 real-world OpenAPI specs** — Payment Intents (Stripe-style), Issues & Repos (GitHub-style), Transactional Email (SendGrid-style), User Management (auth + admin), File Storage (S3-compatible)
+- **Load with a click** — fills the editor, auto-selects JSON format, sets the title
+- **Production-scale detail** — full request/response schemas, auth flows, error handling, pagination, webhooks
+
+### v0.4.4 — Requirement Analysis Presets
+
+- **6 real-world product requirements** — Enterprise SSO (SAML/OIDC + SCIM), Marketplace Payouts (Stripe Connect-style), Collaborative Editing (CRDT-based), Video Streaming Platform, Immutable Audit Log System, Feature Flag Platform
+- **Rich specifications** — detailed functional and non-functional requirements in plain text, Markdown, and Gherkin (Given/When/Then) formats
+- **Great for demo mode** — all presets are client-side, no backend needed
 
 ### v0.4.3 — CI Log Presets
 
@@ -273,8 +285,10 @@ uv run ruff check
 | **v0.4.1** | Export & Share (Markdown/JSON download, clipboard copy) | ✅ Done |
 | **v0.4.2** | Session History Page — browse past analyses, summaries, click to details | ✅ Done |
 | **v0.4.3** | CI Log Presets — one-click example failure scenarios for demo/learning | ✅ Done |
-| **v0.4.4** | Session Cleanup & Retention — delete button + configurable retention policy | 🔜 Planned |
-| **v0.4.5** | Multi-Artifact Failure Analysis — file upload (screenshots, page source, JSON logs) | 🔜 Planned |
+| **v0.4.4** | Requirement Analysis Presets — real-world product requirement examples | ✅ Done |
+| **v0.4.5** | API Test Generation Presets — real-world OpenAPI spec examples | ✅ Done |
+| **v0.4.6** | Session Cleanup & Retention — delete button + configurable retention policy | 🔜 Planned |
+| **v0.4.7** | Multi-Artifact Failure Analysis — file upload (screenshots, page source, JSON logs) | 🔜 Planned |
 | **v0.5.0** | Multi-user & Teams — authentication, user management, RBAC | 🔜 Planned |
 
 ---

@@ -5,10 +5,11 @@ selection (YAML or JSON) and optional configuration fields.
 */
 
 import { useState } from "react";
-import { AlertCircle, FileCode, FileJson } from "lucide-react";
+import { AlertCircle, FileCode, FileJson, BookOpen } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { API_TEST_PRESETS } from "@/modules/api-test-generation/data/presets";
 
 interface SpecEditorProps {
   onSubmit: (spec: string, specFormat: "yaml" | "json") => void;
@@ -88,6 +89,36 @@ export function SpecEditor({
             <span className="font-medium">{option.label}</span>
           </button>
         ))}
+      </div>
+
+      {/* Preset selector */}
+      <div>
+        <p className="mb-2 text-xs font-medium text-muted-foreground">
+          Try a real-world API spec
+        </p>
+        <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3">
+          {API_TEST_PRESETS.map((preset) => (
+            <button
+              key={preset.id}
+              type="button"
+              onClick={() => {
+                setSpec(preset.content);
+                setSpecFormat(preset.specFormat);
+                setTitle(preset.title);
+              }}
+              className={cn(
+                "flex items-center gap-2 rounded-lg border px-2.5 py-2 text-left text-xs transition-colors",
+                spec === preset.content
+                  ? "border-primary/50 bg-primary/5"
+                  : "border-border/60 hover:border-muted-foreground/30 hover:bg-muted/30",
+              )}
+              title={preset.description}
+            >
+              <BookOpen className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+              <span className="truncate font-medium">{preset.title}</span>
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Spec text area */}

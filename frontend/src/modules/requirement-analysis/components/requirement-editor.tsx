@@ -5,11 +5,12 @@ selection (plain text, Markdown, acceptance criteria).
 */
 
 import { useState } from "react";
-import { AlertCircle, FileText, Braces, ListChecks } from "lucide-react";
+import { AlertCircle, FileText, Braces, ListChecks, BookOpen } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { InputSourceType } from "@/modules/requirement-analysis/types";
+import { REQUIREMENT_PRESETS } from "@/modules/requirement-analysis/data/presets";
 
 interface RequirementEditorProps {
   onSubmit: (content: string, sourceType: InputSourceType) => void;
@@ -79,6 +80,35 @@ export function RequirementEditor({
             <span className="font-medium">{option.label}</span>
           </button>
         ))}
+      </div>
+
+      {/* Preset selector */}
+      <div>
+        <p className="mb-2 text-xs font-medium text-muted-foreground">
+          Try a real-world requirement
+        </p>
+        <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3">
+          {REQUIREMENT_PRESETS.map((preset) => (
+            <button
+              key={preset.id}
+              type="button"
+              onClick={() => {
+                setContent(preset.content);
+                setSourceType(preset.sourceType);
+              }}
+              className={cn(
+                "flex items-center gap-2 rounded-lg border px-2.5 py-2 text-left text-xs transition-colors",
+                content === preset.content
+                  ? "border-primary/50 bg-primary/5"
+                  : "border-border/60 hover:border-muted-foreground/30 hover:bg-muted/30",
+              )}
+              title={preset.description}
+            >
+              <BookOpen className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+              <span className="truncate font-medium">{preset.title}</span>
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Text area */}
