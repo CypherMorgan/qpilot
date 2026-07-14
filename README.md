@@ -21,37 +21,9 @@
 
 ## What's New
 
-### v0.4.5 — API Test Gen Presets
+See the full [Changelog](./CHANGELOG.md) for the complete release history.
 
-- **5 real-world OpenAPI specs** — Payment Intents (Stripe-style), Issues & Repos (GitHub-style), Transactional Email (SendGrid-style), User Management (auth + admin), File Storage (S3-compatible)
-- **Load with a click** — fills the editor, auto-selects JSON format, sets the title
-- **Production-scale detail** — full request/response schemas, auth flows, error handling, pagination, webhooks
-
-### v0.4.4 — Requirement Analysis Presets
-
-- **6 real-world product requirements** — Enterprise SSO (SAML/OIDC + SCIM), Marketplace Payouts (Stripe Connect-style), Collaborative Editing (CRDT-based), Video Streaming Platform, Immutable Audit Log System, Feature Flag Platform
-- **Rich specifications** — detailed functional and non-functional requirements in plain text, Markdown, and Gherkin (Given/When/Then) formats
-- **Great for demo mode** — all presets are client-side, no backend needed
-
-### v0.4.3 — CI Log Presets
-
-- **One-click demo scenarios** — 8 realistic CI failure examples (assertion error, timeout, missing dependency, flaky test, type error, env mismatch, DB connection, compilation error)
-- **Load with a click** — fills the editor, auto-selects source type, ready to analyze
-- **Great for demo mode** — works fully in GitHub Pages preview mode, no backend needed
-
-### v0.4.2 — Session History
-
-- **Session History pages** for all three modules — browse past analyses with pagination, status badges, metadata
-- **Quick navigation** — "History" button on every analysis page and session detail page
-- Previous "Back to Dashboard" buttons now navigate back to the module's analysis page
-
-### v0.4.1 — Export & Share
-
-- **Export Failure Analysis reports** — Download as Markdown (.md) or JSON (.json) with one click
-- **Copy to clipboard** — Copy the full Markdown report for pasting into PRs, tickets, or Slack
-- **Client-side export** — No backend needed; works fully in GitHub Pages preview mode
-
-See the full [Roadmap](#roadmap) below for the complete release history.
+**Latest: v0.4.5** — API Test Gen Presets. [Read more](./CHANGELOG.md#v045--api-test-gen-presets-2026-07-14).
 
 ## Features
 

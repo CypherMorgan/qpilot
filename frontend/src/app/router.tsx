@@ -4,6 +4,7 @@ import { RootLayout } from "@/layouts/root-layout";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { HomePage } from "@/app/pages/home";
 import { SettingsPage } from "@/app/pages/settings";
+import { ChangelogPage } from "@/app/pages/changelog";
 import { NotFoundPage } from "@/app/pages/not-found";
 import { RequirementAnalysisPage } from "@/modules/requirement-analysis/pages/analysis-page";
 import { SessionDetailPage } from "@/modules/requirement-analysis/pages/session-detail-page";
@@ -31,6 +32,7 @@ const router = createBrowserRouter(
       children: [
         { index: true, element: <HomePage /> },
         { path: "settings", element: <SettingsPage /> },
+        { path: "changelog", element: <ChangelogPage /> },
         // Requirement Analysis module
         { path: "requirements/analyze", element: <RequirementAnalysisPage /> },
         { path: "requirements/sessions", element: <RequirementSessionsPage /> },

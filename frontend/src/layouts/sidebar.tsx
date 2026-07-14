@@ -6,6 +6,7 @@ import {
   FlaskConical,
   Bug,
   FileJson,
+  Megaphone,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -35,6 +36,7 @@ const moduleNav: NavItem[] = [
 ];
 
 const bottomNav: NavItem[] = [
+  { label: "What's New", path: "/changelog", icon: Megaphone },
   { label: "Settings", path: "/settings", icon: Settings },
 ];
 

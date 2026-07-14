@@ -1,4 +1,5 @@
-import { Moon, Sun } from "lucide-react";
+import { Moon, Sun, ExternalLink } from "lucide-react";
+import { Link } from "react-router-dom";
 
 import { useTheme } from "@/hooks/use-theme";
 import { Button } from "@/components/ui/button";
@@ -56,6 +57,13 @@ export function SettingsPage() {
         <div className="mt-2 space-y-1 text-sm text-muted-foreground">
           <p>{APP_NAME} v{APP_VERSION}</p>
           <p>AI-Powered Quality Engineering Platform</p>
+          <Link
+            to="/changelog"
+            className="mt-2 inline-flex items-center gap-1 text-primary hover:underline"
+          >
+            What's New
+            <ExternalLink className="h-3 w-3" />
+          </Link>
         </div>
       </section>
     </div>

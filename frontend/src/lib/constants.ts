@@ -15,6 +15,7 @@ export const API_PREFIX = "/api/v1";
 export const ROUTES = {
   HOME: "/",
   SETTINGS: "/settings",
+  CHANGELOG: "/changelog",
   REQUIREMENT_ANALYSIS: "/requirements/analyze",
   REQUIREMENT_SESSIONS: "/requirements/sessions",
   REQUIREMENT_SESSION: "/requirements/sessions/:sessionId",
