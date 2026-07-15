@@ -8,7 +8,7 @@ interface ThemeContextValue {
   toggleTheme: () => void;
 }
 
-const STORAGE_KEY = "qpilot-theme";
+const STORAGE_KEY = "cypherpilot-theme";
 
 function getInitialTheme(): Theme {
   if (typeof window === "undefined") return "light";

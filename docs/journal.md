@@ -1,4 +1,4 @@
-# QPilot — Engineering Journal
+# CypherPilot — Engineering Journal
 
 > A running record of architectural decisions, lessons learned, and engineering rationale throughout the project lifecycle.
 
@@ -7,13 +7,13 @@
 ## 2026-07-01 — Project Inception
 
 ### What we did
-- Formally initiated the QPilot project
+- Formally initiated the CypherPilot project
 - Established development philosophy: design-first, implement-second, with architectural review before every major phase
 - Defined engineering principles: Clean Architecture, SOLID, separation of concerns, feature-first modularity, strong typing
 - Completed Phase 0 — Product Discovery
 
 ### Key decisions made
-1. **Renamed from "Cyp QPilot" to "QPilot"** — the original name implied Cypress-specific tooling, which contradicted our framework-agnostic vision. QPilot = Quality Pilot.
+1. **Renamed from "Cypress CypherPilot" to "CypherPilot"** — the original name implied Cypress-specific tooling, which contradicted our framework-agnostic vision. CypherPilot = Quality Pilot.
 2. **Single-user, self-hosted web app** for MVP — no auth, no multi-tenancy, no SaaS. Keeps scope tight.
 3. **Artifact-driven over chat-driven** — users upload files, get structured outputs. AI is the engine, not the interface.
 4. **Module independence** — Requirement Analysis, API Test Generation, and Automation Failure Analysis are independent modules sharing only platform infrastructure.
@@ -134,7 +134,7 @@
 ### What we did
 - Created the FastAPI application scaffold with `create_app()` factory pattern
 - Implemented pydantic-settings configuration hierarchy (AppConfig → DatabaseConfig, AIConfig, StorageConfig)
-- Defined QPilotError exception hierarchy with error code mapping
+- Defined CypherPilotError exception hierarchy with error code mapping
 - Configured structlog for structured JSON logging (dev/production auto-detection)
 - Implemented RequestIDMiddleware for request tracing via `X-Request-ID` header
 - Registered 5 hierarchical error handlers (ValidationError, NotFoundError, ProviderError, ConfigurationError, generic)
@@ -316,7 +316,7 @@ All ADRs remain valid. The Docker/Compose configuration is a deployment concern 
 ## 2026-07-02 — Phase 3: Requirement Analysis Module
 
 ### What we did
-- **Built the complete Requirement Analysis module** — first end-to-end business feature of QPilot. Full vertical slice from API to frontend UI.
+- **Built the complete Requirement Analysis module** — first end-to-end business feature of CypherPilot. Full vertical slice from API to frontend UI.
 
 ### Backend (`app/modules/requirement_analysis/`)
 

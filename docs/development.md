@@ -277,7 +277,7 @@ Ensure CI uses the same Python version (3.11+) and installs with `uv sync` (or `
 
 ### Permission denied on mounted files
 
-On Linux, files created inside the container may be owned by `uid:1001` (the `qpilot` user). Run `sudo chown -R $(id -u):$(id -g) .` in the project root to reset ownership.
+On Linux, files created inside the container may be owned by `uid:1001` (the `cypherpilot` user). Run `sudo chown -R $(id -u):$(id -g) .` in the project root to reset ownership.
 
 This does not affect macOS or Windows.
 
@@ -291,8 +291,8 @@ The current setup is designed for single-container development. For production, 
 
 ```bash
 # Build and push to a registry
-docker build -t ghcr.io/your-org/qpilot:latest .
-docker push ghcr.io/your-org/qpilot:latest
+docker build -t ghcr.io/your-org/cypherpilot:latest .
+docker push ghcr.io/your-org/cypherpilot:latest
 ```
 
 ### Production Compose File

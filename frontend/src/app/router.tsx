@@ -16,7 +16,7 @@ import { FailureAnalysisPage } from "@/modules/failure-analysis/pages/analysis-p
 import { FailureSessionsPage } from "@/modules/failure-analysis/pages/sessions-page";
 import { FailureSessionDetailPage } from "@/modules/failure-analysis/pages/session-detail-page";
 
-// On GitHub Pages the site is at /qpilot/ — match the Vite base path here.
+// On GitHub Pages the site is at /cypherpilot/ — match the Vite base path here.
 const basename = import.meta.env.VITE_BASE_PATH || "/";
 
 const router = createBrowserRouter(

@@ -1,6 +1,6 @@
 """Application exception hierarchy.
 
-All exceptions inherit from QPilotError, providing a consistent
+All exceptions inherit from CypherPilotError, providing a consistent
 error structure for API responses and logging.
 """
 
@@ -9,8 +9,8 @@ from __future__ import annotations
 from typing import Any
 
 
-class QPilotError(Exception):
-    """Base exception for all QPilot errors."""
+class CypherPilotError(Exception):
+    """Base exception for all CypherPilot errors."""
 
     def __init__(
         self,
@@ -23,14 +23,14 @@ class QPilotError(Exception):
         super().__init__(self.message)
 
 
-class ConfigurationError(QPilotError):
+class ConfigurationError(CypherPilotError):
     """Raised when application configuration is invalid or incomplete."""
 
 
 # ── AI Provider Errors ──────────────────────────────────────────
 
 
-class ProviderError(QPilotError):
+class ProviderError(CypherPilotError):
     """Base exception for all AI provider errors."""
 
 
@@ -61,30 +61,30 @@ class InvalidResponseError(ProviderError):
 # ── Prompt Errors ──────────────────────────────────────────────
 
 
-class InvalidPromptError(QPilotError):
+class InvalidPromptError(CypherPilotError):
     """Raised when a prompt template is missing, malformed, or fails to render."""
 
 
 # ── Generic Application Errors ─────────────────────────────────
 
 
-class ValidationError(QPilotError):
+class ValidationError(CypherPilotError):
     """Raised when input validation fails."""
 
 
-class NotFoundError(QPilotError):
+class NotFoundError(CypherPilotError):
     """Raised when a requested resource does not exist."""
 
 
-class StorageError(QPilotError):
+class StorageError(CypherPilotError):
     """Raised when file storage operations fail."""
 
 
-class AnalysisError(QPilotError):
+class AnalysisError(CypherPilotError):
     """Raised when an analysis pipeline fails."""
 
 
-ERROR_CODE_MAP: dict[type[QPilotError], str] = {
+ERROR_CODE_MAP: dict[type[CypherPilotError], str] = {
     ConfigurationError: "CONFIGURATION_ERROR",
     ProviderError: "PROVIDER_ERROR",
     ProviderTimeoutError: "PROVIDER_TIMEOUT",
@@ -101,6 +101,6 @@ ERROR_CODE_MAP: dict[type[QPilotError], str] = {
 }
 
 
-def get_error_code(exc: QPilotError) -> str:
-    """Return the standard error code for a QPilotError subclass."""
+def get_error_code(exc: CypherPilotError) -> str:
+    """Return the standard error code for a CypherPilotError subclass."""
     return ERROR_CODE_MAP.get(type(exc), "INTERNAL_ERROR")

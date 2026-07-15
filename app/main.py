@@ -1,4 +1,4 @@
-"""QPilot application factory.
+"""CypherPilot application factory.
 
 Creates and configures the FastAPI application instance.
 Wires dependencies, mounts middleware, and registers routes.
@@ -26,7 +26,7 @@ from app.exceptions import (
     ConfigurationError,
     NotFoundError,
     ProviderError,
-    QPilotError,
+    CypherPilotError,
     ValidationError,
     get_error_code,
 )
@@ -65,7 +65,7 @@ def _build_error_response(
 
 
 def _register_error_handlers(app: FastAPI) -> None:
-    """Register exception handlers for all QPilot exceptions."""
+    """Register exception handlers for all CypherPilot exceptions."""
 
     @app.exception_handler(ValidationError)
     async def handle_validation_error(
@@ -115,9 +115,9 @@ def _register_error_handlers(app: FastAPI) -> None:
             detail=exc.detail,
         )
 
-    @app.exception_handler(QPilotError)
-    async def handle_qpilot_error(
-        request: Request, exc: QPilotError
+    @app.exception_handler(CypherPilotError)
+    async def handle_cypherpilot_error(
+        request: Request, exc: CypherPilotError
     ) -> JSONResponse:
         return _build_error_response(
             request,
@@ -151,7 +151,7 @@ def create_app(config: AppConfig | None = None) -> FastAPI:
         config.validate_config()
 
     app = FastAPI(
-        title="QPilot API",
+        title="CypherPilot API",
         version=config.app_version,
         description="AI-Powered Quality Engineering Platform API",
         lifespan=_make_lifespan(config),  # type: ignore[arg-type]

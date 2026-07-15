@@ -4,7 +4,7 @@
 |---|---|
 | **Status** | Proposed |
 | **Date** | 2026-07-01 |
-| **Author(s)** | QPilot Engineering Team |
+| **Author(s)** | CypherPilot Engineering Team |
 | **Supersedes** | None |
 | **Superseded by** | N/A |
 
@@ -12,7 +12,7 @@
 
 ## Context
 
-QPilot is organized around feature modules — independent bundles of business logic that each solve a specific QA engineering problem. The three MVP modules are:
+CypherPilot is organized around feature modules — independent bundles of business logic that each solve a specific QA engineering problem. The three MVP modules are:
 
 1. **Requirement Analysis Module** — transforms requirements into structured test cases
 2. **API Test Generation Module** — transforms OpenAPI specs into PyTest suites
@@ -31,7 +31,7 @@ The architecture must define:
 
 ## Problem Statement
 
-How should QPilot organize its feature modules to ensure:
+How should CypherPilot organize its feature modules to ensure:
 
 1. **Each module is independently developable** — a developer can work on Requirement Analysis without understanding Failure Analysis internals
 2. **Each module is independently testable** — tests for one module don't require setup from another

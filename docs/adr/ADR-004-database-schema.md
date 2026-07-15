@@ -5,7 +5,7 @@
 | **Status** | Accepted |
 | **Date** | 2026-07-01 |
 | **Updated** | 2026-07-02 |
-| **Author(s)** | QPilot Engineering Team |
+| **Author(s)** | CypherPilot Engineering Team |
 | **Supersedes** | None |
 | **Superseded by** | N/A |
 
@@ -13,7 +13,7 @@
 
 ## Context
 
-QPilot persists data across several categories:
+CypherPilot persists data across several categories:
 - **Analysis sessions** — the link between inputs and outputs for a single AI analysis request
 - **Uploaded artifacts** — requirements documents, OpenAPI specs, failure logs
 - **Generated outputs** — test cases, PyTest suites, root-cause analyses
@@ -31,7 +31,7 @@ The database must support:
 
 ## Problem Statement
 
-Design a PostgreSQL database schema for the QPilot MVP that:
+Design a PostgreSQL database schema for the CypherPilot MVP that:
 
 1. Supports all three MVP modules with a unified session-based model
 2. Stores AI provider call metadata (provider, model, tokens, latency) alongside each analysis
@@ -157,7 +157,7 @@ class InputSourceType(str, Enum):
 
 
 class AnalysisSession(Base, UUIDMixin, TimestampMixin):
-    """An analysis session — root aggregate of the QPilot domain."""
+    """An analysis session — root aggregate of the CypherPilot domain."""
 
     __tablename__ = "analysis_sessions"
 

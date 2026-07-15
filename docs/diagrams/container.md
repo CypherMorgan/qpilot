@@ -1,6 +1,6 @@
 # C4 Level 2 — Container Diagram
 
-> **Purpose:** Show the high-level technical building blocks of QPilot — the deployable units (containers) that make up the system, their responsibilities, and how they communicate.
+> **Purpose:** Show the high-level technical building blocks of CypherPilot — the deployable units (containers) that make up the system, their responsibilities, and how they communicate.
 >
 > **Audience:** Software engineers, DevOps, tech leads. This is the "technical architecture overview."
 
@@ -10,11 +10,11 @@
 
 ```mermaid
 C4Container
-  title Container Diagram — QPilot (MVP)
+  title Container Diagram — CypherPilot (MVP)
 
   Person(qa, "QA Engineer / SDET", "Uploads artifacts, views structured analysis results")
 
-  System_Boundary(qpilot, "QPilot") {
+  System_Boundary(cypherpilot, "CypherPilot") {
     Container(webapp, "Web Application", "React 18, TypeScript, Vite", "Single-page application — provides the engineering UI for uploading artifacts and reviewing results")
     Container(api, "API Application", "Python 3.12, FastAPI, Uvicorn", "REST API server — owns all business logic, AI orchestration, prompt management, and data access")
     Container(db, "Database", "PostgreSQL 16", "Persistent storage — stores uploaded artifacts, generated outputs, analysis history, and metadata")
@@ -60,7 +60,7 @@ C4Container
 - **Vite** — fast dev server, native ES module support, excellent DX. Outpaces Create React App and Webpack for modern SPAs.
 - **Tailwind CSS** — utility-first CSS keeps the UI consistent without writing custom CSS. Production-grade and widely adopted.
 
-**Why not Next.js?** QPilot is a single-user, self-hosted SPA. Server-side rendering adds complexity (Node.js server, hydration, ISR) with zero benefit for an authenticated (future) dashboard application. A plain SPA served as static files is simpler, faster to build, and easier to deploy.
+**Why not Next.js?** CypherPilot is a single-user, self-hosted SPA. Server-side rendering adds complexity (Node.js server, hydration, ISR) with zero benefit for an authenticated (future) dashboard application. A plain SPA served as static files is simpler, faster to build, and easier to deploy.
 
 ---
 
@@ -256,7 +256,7 @@ For consistency across all C4 diagrams in this project:
 | **Technology annotations** | Included in the container title on the diagram, detailed in the definition table below |
 | **Relationships** | Verb + protocol: "Makes API calls — JSON / HTTPS" |
 | **Future elements** | Labeled "Future — " consistently across all diagrams |
-| **System boundary** | Only the QPilot system has a boundary box. External systems are outside. |
+| **System boundary** | Only the CypherPilot system has a boundary box. External systems are outside. |
 
 ---
 
@@ -264,7 +264,7 @@ For consistency across all C4 diagrams in this project:
 
 1. **"Why three containers instead of one?"** — Each layer has different lifecycle, scaling, and security requirements. Containers enforce separation of concerns at the process level. PostgreSQL in its own container means we can swap, backup, or scale the database without touching the application. The frontend being separate means we can iterate on UI without redeploying the backend.
 
-2. **"Why not use Django, which gives you all of this in one framework?"** — Django is excellent for full-stack applications where the backend renders HTML. But QPilot is an API-first platform with a rich JavaScript frontend. FastAPI gives us async performance, automatic OpenAPI docs, and first-class Pydantic integration — none of which Django excels at without significant bolt-ons.
+2. **"Why not use Django, which gives you all of this in one framework?"** — Django is excellent for full-stack applications where the backend renders HTML. But CypherPilot is an API-first platform with a rich JavaScript frontend. FastAPI gives us async performance, automatic OpenAPI docs, and first-class Pydantic integration — none of which Django excels at without significant bolt-ons.
 
 3. **"How do you handle file storage?"** — For MVP, uploaded artifacts go to a Docker volume (local filesystem). The database stores a reference path and metadata. The actual files never leave the host machine. If we need to scale, we swap the volume for S3/MinIO — the repository pattern for file storage makes this a configuration change.
 

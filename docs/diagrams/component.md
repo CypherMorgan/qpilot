@@ -140,7 +140,7 @@ The API Application follows a layered architecture with strict dependency direct
 
 ## Component Classification by Architectural Category
 
-Every component in QPilot belongs to exactly one of four categories:
+Every component in CypherPilot belongs to exactly one of four categories:
 
 | Category | Responsibility | Components |
 |---|---|---|
@@ -404,7 +404,7 @@ class AnalysisSessionRepository(Protocol):
 |---|---|
 | **Technology** | FastAPI exception handlers registered at application startup |
 | **Why it exists** | Ensures every error returns a consistent JSON envelope: `{"error": {"code": "...", "message": "...", "detail": {...}}}` |
-| **Custom exceptions** | `QPilotError` (base) → `ProviderError`, `ValidationError`, `NotFoundError`, `ConfigurationError` |
+| **Custom exceptions** | `CypherPilotError` (base) → `ProviderError`, `ValidationError`, `NotFoundError`, `ConfigurationError` |
 | **Test boundary** | Test via FastAPI `TestClient` — assert error status and envelope structure |
 
 #### File Storage
@@ -499,7 +499,7 @@ class AnalysisSessionRepository(Protocol):
 | **Configuration** | Unit test with overridden values | Environment variables | ⚡ Instant |
 | **File Storage** | Unit: mock interface. Integration: temp directory | For MVP: real local filesystem | ⚡ Fast |
 
-**Test pyramid for QPilot:**
+**Test pyramid for CypherPilot:**
 
 ```
          ╱╲

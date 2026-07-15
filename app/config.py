@@ -23,10 +23,10 @@ class DatabaseConfig(BaseSettings):
 
     model_config = SettingsConfigDict(env_prefix="DATABASE_", extra="ignore")
 
-    url: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/qpilot"
+    url: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/cypherpilot"
     """Async database URL for the application."""
 
-    sync_url: str = "postgresql://postgres:postgres@localhost:5432/qpilot"
+    sync_url: str = "postgresql://postgres:postgres@localhost:5432/cypherpilot"
     """Sync database URL for Alembic migrations (psycopg2 driver)."""
 
     echo: bool = False
@@ -99,8 +99,8 @@ class AppConfig(BaseSettings):
     debug: bool = False
     """Enable debug mode. Set DEBUG=true."""
 
-    app_name: str = "QPilot"
-    app_version: str = "0.4.1"
+    app_name: str = "CypherPilot"
+    app_version: str = "0.4.5"
 
     log_level: str = "INFO"
     """Logging level: DEBUG, INFO, WARNING, ERROR."""

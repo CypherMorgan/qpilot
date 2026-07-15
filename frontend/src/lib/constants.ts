@@ -1,5 +1,5 @@
 /** Application-wide constants */
-export const APP_NAME = "QPilot";
+export const APP_NAME = "CypherPilot";
 export const APP_VERSION = "0.4.5";
 
 /** Set to "true" at build time for GitHub Pages deployment (no backend) */
@@ -38,5 +38,5 @@ export const NAV_ITEMS = [
 
 /** Local storage keys */
 export const STORAGE_KEYS = {
-  THEME: "qpilot-theme",
+  THEME: "cypherpilot-theme",
 } as const;

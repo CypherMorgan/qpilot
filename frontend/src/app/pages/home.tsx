@@ -65,12 +65,12 @@ const modules: Module[] = [
 const resourceLinks = [
   {
     label: "GitHub Repository",
-    href: "https://github.com/CypherMorgan/qpilot",
+    href: "https://github.com/CypherMorgan/cypherpilot",
     icon: GitFork,
   },
   {
     label: "Architecture Docs",
-    href: "https://github.com/CypherMorgan/qpilot/tree/master/docs",
+    href: "https://github.com/CypherMorgan/cypherpilot/tree/master/docs",
     icon: BookOpen,
   },
 ];

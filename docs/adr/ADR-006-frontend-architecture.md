@@ -4,7 +4,7 @@
 |---|---|
 | **Status** | Accepted |
 | **Date** | 2026-07-02 |
-| **Author(s)** | QPilot Engineering Team |
+| **Author(s)** | CypherPilot Engineering Team |
 | **Supersedes** | None |
 | **Superseded by** | N/A |
 
@@ -12,7 +12,7 @@
 
 ## Context
 
-QPilot needs a single-page application (SPA) frontend that consumes the RESTful API defined in ADR-005. The frontend must support three MVP feature modules (Requirement Analysis, API Test Generation, Failure Analysis) with a consistent shell, navigation, and design system.
+CypherPilot needs a single-page application (SPA) frontend that consumes the RESTful API defined in ADR-005. The frontend must support three MVP feature modules (Requirement Analysis, API Test Generation, Failure Analysis) with a consistent shell, navigation, and design system.
 
 The frontend is the user's primary interface — it must feel like an internal engineering platform (inspired by GitHub, Linear, Stripe Dashboard, Railway, Atlassian), not a chat-style interface.
 
@@ -20,7 +20,7 @@ The frontend is the user's primary interface — it must feel like an internal e
 
 ## Problem Statement
 
-Design the QPilot frontend architecture such that:
+Design the CypherPilot frontend architecture such that:
 
 1. **Feature-first organization** — modules are self-contained directories that mirror the backend module architecture (ADR-003)
 2. **No global state library** — prefer local state + TanStack Query; avoid Redux/Zustand/MobX unless a genuine need emerges

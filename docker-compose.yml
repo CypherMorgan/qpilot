@@ -1,4 +1,4 @@
-# QPilot — Docker Compose
+# CypherPilot — Docker Compose
 # ========================
 #
 # Production-adjacent configuration for local development.
@@ -19,18 +19,18 @@ services:
   # ── PostgreSQL ──────────────────────────────────────────────
   postgres:
     image: postgres:16-alpine
-    container_name: qpilot-postgres
+    container_name: cypherpilot-postgres
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U qpilot -d qpilot"]
+      test: ["CMD-SHELL", "pg_isready -U cypherpilot -d cypherpilot"]
       interval: 5s
       timeout: 5s
       retries: 5
       start_period: 10s
     environment:
-      POSTGRES_USER: qpilot
-      POSTGRES_PASSWORD: qpilot
-      POSTGRES_DB: qpilot
+      POSTGRES_USER: cypherpilot
+      POSTGRES_PASSWORD: cypherpilot
+      POSTGRES_DB: cypherpilot
     ports:
       - "5432:5432"
     volumes:
@@ -43,7 +43,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: qpilot-backend
+    container_name: cypherpilot-backend
     restart: unless-stopped
     depends_on:
       postgres:
@@ -52,14 +52,14 @@ services:
       - "8000:8000"
     environment:
       # Database — points to the compose-managed PostgreSQL instance
-      DATABASE_URL: "postgresql+asyncpg://qpilot:qpilot@postgres:5432/qpilot"
-      DATABASE_SYNC_URL: "postgresql://qpilot:qpilot@postgres:5432/qpilot"
+      DATABASE_URL: "postgresql+asyncpg://cypherpilot:cypherpilot@postgres:5432/cypherpilot"
+      DATABASE_SYNC_URL: "postgresql://cypherpilot:cypherpilot@postgres:5432/cypherpilot"
 
       # Logging
       LOG_LEVEL: "INFO"
 
       # Application
-      APP_NAME: "QPilot"
+      APP_NAME: "CypherPilot"
       CORS_ORIGINS: "http://localhost:3000,http://localhost:8000"
     networks:
       - backend
@@ -69,7 +69,7 @@ services:
     build:
       context: frontend
       dockerfile: Dockerfile
-    container_name: qpilot-frontend
+    container_name: cypherpilot-frontend
     restart: unless-stopped
     depends_on:
       - backend
@@ -80,9 +80,9 @@ services:
 
 volumes:
   postgres_data:
-    name: qpilot-postgres-data
+    name: cypherpilot-postgres-data
 
 networks:
   backend:
-    name: qpilot-backend
+    name: cypherpilot-backend
     driver: bridge

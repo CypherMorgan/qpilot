@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 # =============================================================================
-# QPilot — Install / Uninstall Script
+# CypherPilot — Install / Uninstall Script
 # =============================================================================
 # Usage:
-#   curl -fsSL https://raw.githubusercontent.com/CypherMorgan/qpilot/main/scripts/install.sh | bash
-#   curl -fsSL https://raw.githubusercontent.com/CypherMorgan/qpilot/main/scripts/install.sh | bash -s uninstall
+#   curl -fsSL https://raw.githubusercontent.com/CypherMorgan/cypherpilot/main/scripts/install.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/CypherMorgan/cypherpilot/main/scripts/install.sh | bash -s uninstall
 #
 # What it does (install):
 #   1. Checks prerequisites (Python 3.11+, Node.js 18+, npm)
@@ -12,7 +12,7 @@
 #   3. Creates a Python virtual environment and installs dependencies
 #   4. Installs frontend dependencies and builds the SPA
 #   5. Runs database migrations (SQLite by default — zero config)
-#   6. Creates a `qpilot` CLI alias in the user's shell profile
+#   6. Creates a `cypherpilot` CLI alias in the user's shell profile
 #   7. Shows a summary with paths and how to start/remove
 #
 # What it does (uninstall):
@@ -25,10 +25,10 @@
 set -euo pipefail
 
 # ── Configuration ────────────────────────────────────────────────────────────
-REPO_URL="https://github.com/CypherMorgan/qpilot.git"
+REPO_URL="https://github.com/CypherMorgan/cypherpilot.git"
 REPO_BRANCH="master"
-INSTALL_DIR="${QPILOT_HOME:-$HOME/.qpilot}"
-QPILOT_VERSION="0.4.5"
+INSTALL_DIR="${CYPHERPILOT_HOME:-$HOME/.cypherpilot}"
+CYPHERPILOT_VERSION="0.4.5"
 
 # Colors for output
 RED='\033[0;31m'
@@ -76,7 +76,7 @@ trap cleanup EXIT
 do_install() {
   echo ""
   echo "${BOLD}╔══════════════════════════════════════════════════╗${NC}"
-  echo "${BOLD}║        QPilot v${QPILOT_VERSION} — Installer           ║${NC}"
+  echo "${BOLD}║        CypherPilot v${CYPHERPILOT_VERSION} — Installer           ║${NC}"
   echo "${BOLD}╚══════════════════════════════════════════════════╝${NC}"
   echo ""
 
@@ -113,7 +113,7 @@ do_install() {
   check_cmd npm
 
   # ── Step 2: Clone / update repository ────────────────────────────────────
-  log_step "Getting QPilot source"
+  log_step "Getting CypherPilot source"
 
   if [ -d "$INSTALL_DIR" ]; then
     log_info "Updating existing installation in $INSTALL_DIR"
@@ -180,8 +180,8 @@ do_install() {
     log_info "Creating .env from .env.example (SQLite by default)"
     cp .env.example .env
     # Switch to SQLite for zero-config local setup
-    sed -i 's|postgresql+asyncpg://.*|sqlite+aiosqlite:///./qpilot.db|' .env
-    sed -i 's|postgresql://.*|sqlite:///./qpilot.db|' .env
+    sed -i 's|postgresql+asyncpg://.*|sqlite+aiosqlite:///./cypherpilot.db|' .env
+    sed -i 's|postgresql://.*|sqlite:///./cypherpilot.db|' .env
     log_ok ".env created with SQLite"
   else
     log_info ".env already exists, keeping it"
@@ -195,10 +195,10 @@ do_install() {
   log_ok "Database ready"
 
   # ── Step 6: Create shell alias ────────────────────────────────────────────
-  log_step "Creating 'qpilot' command"
+  log_step "Creating 'cypherpilot' command"
 
-  ALIAS_LINE="alias qpilot='cd $INSTALL_DIR && source .venv/bin/activate && uvicorn app.main:app --host 0.0.0.0 --port 8000'"
-  UNINSTALL_LINE="alias qpilot-uninstall='cd $INSTALL_DIR && bash scripts/install.sh uninstall'"
+  ALIAS_LINE="alias cypherpilot='cd $INSTALL_DIR && source .venv/bin/activate && uvicorn app.main:app --host 0.0.0.0 --port 8000'"
+  UNINSTALL_LINE="alias cypherpilot-uninstall='cd $INSTALL_DIR && bash scripts/install.sh uninstall'"
 
   # Detect shell profile
   SHELL_PROFILE=""
@@ -213,9 +213,9 @@ do_install() {
   fi
 
   if [ -n "$SHELL_PROFILE" ] && [ -f "$SHELL_PROFILE" ]; then
-    # Remove old qpilot aliases if present
-    sed -i '/^alias qpilot=/d' "$SHELL_PROFILE" 2>/dev/null || true
-    sed -i '/^alias qpilot-uninstall=/d' "$SHELL_PROFILE" 2>/dev/null || true
+    # Remove old cypherpilot aliases if present
+    sed -i '/^alias cypherpilot=/d' "$SHELL_PROFILE" 2>/dev/null || true
+    sed -i '/^alias cypherpilot-uninstall=/d' "$SHELL_PROFILE" 2>/dev/null || true
 
     echo "$ALIAS_LINE" >> "$SHELL_PROFILE"
     echo "$UNINSTALL_LINE" >> "$SHELL_PROFILE"
@@ -228,20 +228,20 @@ do_install() {
   fi
 
   # Also create a convenience script in PATH-friendly location
-  cat > "$INSTALL_DIR/qpilot.sh" << 'SCRIPT'
+  cat > "$INSTALL_DIR/cypherpilot.sh" << 'SCRIPT'
 #!/usr/bin/env bash
 DIR="$(cd "$(dirname "$0")" && pwd)"
 cd "$DIR"
 source .venv/bin/activate
 uvicorn app.main:app --host 0.0.0.0 --port 8000 "$@"
 SCRIPT
-  chmod +x "$INSTALL_DIR/qpilot.sh"
-  log_ok "Start script created at $INSTALL_DIR/qpilot.sh"
+  chmod +x "$INSTALL_DIR/cypherpilot.sh"
+  log_ok "Start script created at $INSTALL_DIR/cypherpilot.sh"
 
   # ── Summary ──────────────────────────────────────────────────────────────
   echo ""
   echo "${BOLD}╔══════════════════════════════════════════════════╗${NC}"
-  echo "${BOLD}║          QPilot v${QPILOT_VERSION} installed!           ║${NC}"
+  echo "${BOLD}║          CypherPilot v${CYPHERPILOT_VERSION} installed!           ║${NC}"
   echo "${BOLD}╚══════════════════════════════════════════════════╝${NC}"
   echo ""
   echo "  ${BOLD}Install path:${NC}     $INSTALL_DIR"
@@ -252,13 +252,13 @@ SCRIPT
   echo "    cd $INSTALL_DIR && source .venv/bin/activate"
   echo "    uvicorn app.main:app --host 0.0.0.0 --port 8000"
   echo ""
-  echo "    Or use the alias:  ${BOLD}qpilot${NC}"
+  echo "    Or use the alias:  ${BOLD}cypherpilot${NC}"
   echo ""
   echo "  ${BOLD}Open in browser:${NC}  http://localhost:8000"
   echo "  ${BOLD}API docs:${NC}         http://localhost:8000/docs"
   echo ""
   echo "  ${BOLD}To uninstall:${NC}     bash $INSTALL_DIR/scripts/install.sh uninstall"
-  echo "                    or  ${BOLD}qpilot-uninstall${NC}"
+  echo "                    or  ${BOLD}cypherpilot-uninstall${NC}"
   echo ""
 }
 
@@ -267,7 +267,7 @@ SCRIPT
 do_uninstall() {
   echo ""
   echo "${BOLD}╔══════════════════════════════════════════════════╗${NC}"
-  echo "${BOLD}║         QPilot — Uninstall                       ║${NC}"
+  echo "${BOLD}║         CypherPilot — Uninstall                       ║${NC}"
   echo "${BOLD}╚══════════════════════════════════════════════════╝${NC}"
   echo ""
 
@@ -281,8 +281,8 @@ do_uninstall() {
 
   for profile in "${HOME}/.zshrc" "${HOME}/.bashrc" "${HOME}/.bash_profile"; do
     if [ -f "$profile" ]; then
-      sed -i '/^alias qpilot=/d' "$profile" 2>/dev/null || true
-      sed -i '/^alias qpilot-uninstall=/d' "$profile" 2>/dev/null || true
+      sed -i '/^alias cypherpilot=/d' "$profile" 2>/dev/null || true
+      sed -i '/^alias cypherpilot-uninstall=/d' "$profile" 2>/dev/null || true
       log_ok "Cleaned aliases from $profile"
     fi
   done
@@ -313,14 +313,14 @@ do_uninstall() {
 
   # Check for stray processes
   if pgrep -f "uvicorn.*app.main" &>/dev/null 2>&1; then
-    log_warn "A QPilot process may still be running."
+    log_warn "A CypherPilot process may still be running."
     log_info "Stop it with: pkill -f 'uvicorn.*app.main'"
     leftovers=true
   fi
 
   if [ "$leftovers" = false ]; then
     echo ""
-    echo "${GREEN}  ✓ QPilot has been completely removed.${NC}"
+    echo "${GREEN}  ✓ CypherPilot has been completely removed.${NC}"
     echo ""
   else
     echo ""
@@ -341,8 +341,8 @@ case "${1:-install}" in
   *)
     echo "Usage: bash install.sh [install|uninstall]"
     echo ""
-    echo "  install   (default) Install QPilot"
-    echo "  uninstall           Remove QPilot completely"
+    echo "  install   (default) Install CypherPilot"
+    echo "  uninstall           Remove CypherPilot completely"
     exit 1
     ;;
 esac

@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to QPilot are documented here.
+All notable changes to CypherPilot are documented here.
 
 ---
 

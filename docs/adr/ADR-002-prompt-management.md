@@ -5,7 +5,7 @@
 | **Status** | Accepted |
 | **Date** | 2026-07-01 |
 | **Last Updated** | 2026-07-02 |
-| **Author(s)** | QPilot Engineering Team |
+| **Author(s)** | CypherPilot Engineering Team |
 | **Supersedes** | None |
 | **Superseded by** | N/A |
 
@@ -13,7 +13,7 @@
 
 ## Context
 
-QPilot uses AI prompts to drive every analysis feature. These prompts contain:
+CypherPilot uses AI prompts to drive every analysis feature. These prompts contain:
 - **System instructions** — role definition, output format rules, constraints
 - **Few-shot examples** — sample inputs and expected outputs
 - **Context insertion points** — where user-provided artifacts are injected
@@ -30,7 +30,7 @@ Without a structured prompt management system, prompts tend to:
 
 ## Problem Statement
 
-How should QPilot store, version, load, render, and evolve its AI prompt templates to ensure:
+How should CypherPilot store, version, load, render, and evolve its AI prompt templates to ensure:
 
 1. **Prompts are reviewable** — can be diffed in PRs, reviewed by non-developers
 2. **Prompts are versioned** — changes can be tracked, rolled back, and correlated with feature releases

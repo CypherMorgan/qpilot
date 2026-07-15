@@ -1,6 +1,6 @@
-# QPilot — Success Criteria
+# CypherPilot — Success Criteria
 
-## How we determine if QPilot is well-built and ready for public showcase
+## How we determine if CypherPilot is well-built and ready for public showcase
 
 ---
 
@@ -60,7 +60,7 @@ These are subjective criteria that determine whether the repository meets the go
 
 An engineer reviewing this repo should be able to understand and discuss:
 
-- [ ] The problem QPilot solves and why it exists
+- [ ] The problem CypherPilot solves and why it exists
 - [ ] The architectural decisions and their trade-offs (from ADRs)
 - [ ] How the AI provider abstraction works
 - [ ] How prompt management is handled

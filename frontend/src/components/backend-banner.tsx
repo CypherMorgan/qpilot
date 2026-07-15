@@ -21,7 +21,7 @@ export function BackendBanner() {
         <span className="text-amber-700 dark:text-amber-300">
           &mdash; Backend not connected.{" "}
           <a
-            href="https://github.com/CypherMorgan/qpilot#quick-start"
+            href="https://github.com/CypherMorgan/cypherpilot#quick-start"
             target="_blank"
             rel="noopener noreferrer"
             className="underline font-medium hover:text-amber-900 dark:hover:text-amber-100"
@@ -30,7 +30,7 @@ export function BackendBanner() {
           </a>{" "}
           or{" "}
           <a
-            href="https://github.com/CypherMorgan/qpilot"
+            href="https://github.com/CypherMorgan/cypherpilot"
             target="_blank"
             rel="noopener noreferrer"
             className="underline font-medium hover:text-amber-900 dark:hover:text-amber-100"

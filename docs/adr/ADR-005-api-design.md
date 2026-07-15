@@ -4,7 +4,7 @@
 |---|---|
 | **Status** | Proposed |
 | **Date** | 2026-07-01 |
-| **Author(s)** | QPilot Engineering Team |
+| **Author(s)** | CypherPilot Engineering Team |
 | **Supersedes** | None |
 | **Superseded by** | N/A |
 
@@ -12,7 +12,7 @@
 
 ## Context
 
-QPilot exposes a RESTful HTTP API consumed by the React frontend. The API must support three MVP modules (Requirement Analysis, API Test Generation, Failure Analysis), file uploads, history listing, and structured result retrieval.
+CypherPilot exposes a RESTful HTTP API consumed by the React frontend. The API must support three MVP modules (Requirement Analysis, API Test Generation, Failure Analysis), file uploads, history listing, and structured result retrieval.
 
 The API is the contract between frontend and backend — it must be:
 - **Consistent** — every endpoint follows the same conventions for naming, status codes, error format, and pagination
@@ -24,7 +24,7 @@ The API is the contract between frontend and backend — it must be:
 
 ## Problem Statement
 
-Design the QPilot REST API such that:
+Design the CypherPilot REST API such that:
 
 1. All three MVP modules have endpoints that follow identical patterns
 2. File uploads (requirements, OpenAPI specs, logs, screenshots) are handled with standard multipart/form-data
@@ -45,7 +45,7 @@ Design the QPilot REST API such that:
 
 Versioning in the URL path is the simplest approach for MVP. It makes the version explicit in every request and doesn't require content negotiation or custom headers.
 
-**Why not header-based versioning?** (e.g., `Accept: application/vnd.qpilot.v1+json`)
+**Why not header-based versioning?** (e.g., `Accept: application/vnd.cypherpilot.v1+json`)
 - More complex for the frontend client to implement
 - Harder to test manually (curl, Postman)
 - Less visible in logs and metrics
@@ -340,7 +340,7 @@ Versioning in the URL path is the simplest approach for MVP. It makes the versio
 Returns a ZIP archive containing all generated Python test files (`conftest.py`, `test_*.py`, `requirements.txt`).
 
 Content-Type: `application/zip`
-Content-Disposition: `attachment; filename="qpilot-api-tests-{session_id[:8]}.zip"`
+Content-Disposition: `attachment; filename="cypherpilot-api-tests-{session_id[:8]}.zip"`
 
 #### POST /api/v1/failures/analyze
 

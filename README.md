@@ -1,6 +1,6 @@
-# QPilot — AI-Powered Quality Engineering Platform
+# CypherPilot — AI-Powered Quality Engineering Platform
 
-**QPilot** is an AI-augmented quality engineering platform that helps QA engineers and SDETs analyze requirements, generate API test suites, and diagnose automation failures — using AI as an accelerator, not a crutch.
+**CypherPilot** is an AI-augmented quality engineering platform that helps QA engineers and SDETs analyze requirements, generate API test suites, and diagnose automation failures — using AI as an accelerator, not a crutch.
 
 > Created by **Cypher Morgan**
 ![Version](https://img.shields.io/badge/version-0.4.5-blue)
@@ -10,10 +10,10 @@
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)
 ![Docker](https://img.shields.io/badge/Docker-Ready-2496ED)
 ![License](https://img.shields.io/badge/License-MIT-yellow)
-[![CI](https://github.com/CypherMorgan/qpilot/actions/workflows/ci.yml/badge.svg)](https://github.com/CypherMorgan/qpilot/actions/workflows/ci.yml)
-[![GitHub Pages](https://github.com/CypherMorgan/qpilot/actions/workflows/deploy-pages.yml/badge.svg)](https://cyphermorgan.github.io/qpilot/)
+[![CI](https://github.com/CypherMorgan/cypherpilot/actions/workflows/ci.yml/badge.svg)](https://github.com/CypherMorgan/cypherpilot/actions/workflows/ci.yml)
+[![GitHub Pages](https://github.com/CypherMorgan/cypherpilot/actions/workflows/deploy-pages.yml/badge.svg)](https://cyphermorgan.github.io/cypherpilot/)
 
-> **Live demo:** [cyphermorgan.github.io/qpilot](https://cyphermorgan.github.io/qpilot/)
+> **Live demo:** [cyphermorgan.github.io/cypherpilot](https://cyphermorgan.github.io/cypherpilot/)
 >
 > *Note: The GitHub Pages site is a static UI preview. API features require a running backend.*
 
@@ -44,32 +44,32 @@ Choose one of two ways:
 **Linux / macOS:**
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/CypherMorgan/qpilot/main/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/CypherMorgan/cypherpilot/main/scripts/install.sh | bash
 ```
 
 **What it does (visible step-by-step):**
 1. Checks prerequisites (Python 3.11+, Node.js, git)
-2. Clones the repo into `~/.qpilot`
+2. Clones the repo into `~/.cypherpilot`
 3. Creates a Python virtual environment and installs all dependencies
 4. Builds the frontend SPA
 5. Sets up SQLite database (zero config — no PostgreSQL needed)
-6. Creates a `qpilot` shell alias and a `qpilot-uninstall` alias
+6. Creates a `cypherpilot` shell alias and a `cypherpilot-uninstall` alias
 
-**Start:** `qpilot` then open http://localhost:8000
+**Start:** `cypherpilot` then open http://localhost:8000
 
-**Uninstall:** `qpilot-uninstall` — removes venv, files, aliases, nothing left behind.
+**Uninstall:** `cypherpilot-uninstall` — removes venv, files, aliases, nothing left behind.
 
 ### ⚡ One-command install (no Docker required)
 
 **Windows:**
 
 ```powershell
-irm https://raw.githubusercontent.com/CypherMorgan/qpilot/main/scripts/install.ps1 | iex
+irm https://raw.githubusercontent.com/CypherMorgan/cypherpilot/main/scripts/install.ps1 | iex
 ```
 
-Or double-click `%USERPROFILE%\.qpilot\start.bat` after installation.
+Or double-click `%USERPROFILE%\.cypherpilot\start.bat` after installation.
 
-**Uninstall:** Double-click `%USERPROFILE%\.qpilot\uninstall.bat`
+**Uninstall:** Double-click `%USERPROFILE%\.cypherpilot\uninstall.bat`
 
 ---
 
@@ -273,7 +273,7 @@ The frontend is automatically deployed to GitHub Pages on every push to `main` v
 
 | URL | Notes |
 |---|---|
-| `https://cyphermorgan.github.io/qpilot/` | Live demo — static UI preview |
+| `https://cyphermorgan.github.io/cypherpilot/` | Live demo — static UI preview |
 | Backend API | Requires a separate deployment (e.g. Railway, Fly.io, or your own server) |
 
 To deploy the backend, set `VITE_API_BASE_URL` in the Pages workflow to your backend URL.

@@ -51,8 +51,8 @@ async def health_check(request: Request) -> dict[str, Any]:
     return {
         "data": {
             "status": "healthy",
-            "app_name": getattr(config, "app_name", "QPilot"),
-            "app_version": getattr(config, "app_version", "0.4.1"),
+            "app_name": getattr(config, "app_name", "CypherPilot"),
+            "app_version": getattr(config, "app_version", "0.4.5"),
             "checks": {
                 "database": db_check,
             },

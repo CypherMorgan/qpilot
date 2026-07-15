@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 #
-# QPilot — Multi-stage Docker image
+# CypherPilot — Multi-stage Docker image
 # ===================================
 #
 # Builder stage
@@ -11,15 +11,15 @@
 #
 # Runtime stage
 #   Copies only the installed packages from the builder and the application source
-#   code.  Runs as non-root user "qpilot".  Starts uvicorn with exec-form so that
+#   code.  Runs as non-root user "cypherpilot".  Starts uvicorn with exec-form so that
 #   Docker signals (SIGTERM) reach uvicorn directly.
 #
 # Usage (development)
 #   docker compose up --build
 #
 # Usage (production build)
-#   docker build -t qpilot:latest .
-#   docker run --rm -p 8000:8000 qpilot:latest
+#   docker build -t cypherpilot:latest .
+#   docker run --rm -p 8000:8000 cypherpilot:latest
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # Stage 1 — Builder
@@ -61,14 +61,14 @@ RUN pip install --no-cache-dir --prefix=/install /stub
 FROM python:3.12-slim AS runtime
 
 # ── Create non-root user ─────────────────────────────────────
-RUN addgroup --system --gid 1001 qpilot && \
+RUN addgroup --system --gid 1001 cypherpilot && \
     adduser \
         --system \
         --uid 1001 \
         --no-create-home \
-        --ingroup qpilot \
+        --ingroup cypherpilot \
         --disabled-password \
-        qpilot
+        cypherpilot
 
 WORKDIR /app
 
@@ -93,8 +93,8 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=15s --retries=3 \
     CMD python -c "import urllib.request; exit(0 if urllib.request.urlopen('http://localhost:8000/api/v1/health').status == 200 else 1)"
 
 # ── Security & runtime setup ─────────────────────────────────
-RUN chown -R qpilot:qpilot /app
-USER qpilot
+RUN chown -R cypherpilot:cypherpilot /app
+USER cypherpilot
 
 EXPOSE 8000
 

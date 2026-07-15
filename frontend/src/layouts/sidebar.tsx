@@ -96,7 +96,7 @@ export function Sidebar({ collapsed }: SidebarProps) {
         )}
       >
         {collapsed ? (
-          <span className="text-lg font-bold text-sidebar-foreground">Q</span>
+          <span className="text-lg font-bold text-sidebar-foreground">CP</span>
         ) : (
           <span className="text-base font-bold text-sidebar-foreground">
             {APP_NAME}

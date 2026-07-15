@@ -4,7 +4,7 @@
 |---|---|
 | **Status** | Proposed |
 | **Date** | 2026-07-02 |
-| **Author(s)** | QPilot Engineering Team |
+| **Author(s)** | CypherPilot Engineering Team |
 | **Supersedes** | None |
 | **Superseded by** | N/A |
 
@@ -12,7 +12,7 @@
 
 ## Context
 
-QPilot's second business module (Phase 4) generates executable PyTest API test suites from OpenAPI 3.1 specifications. This transforms a static API document into a runnable test suite that validates endpoint behavior, response schemas, error handling, and edge cases.
+CypherPilot's second business module (Phase 4) generates executable PyTest API test suites from OpenAPI 3.1 specifications. This transforms a static API document into a runnable test suite that validates endpoint behavior, response schemas, error handling, and edge cases.
 
 ### Problem
 
@@ -546,7 +546,7 @@ The API Test Generation module design is **justified** because:
 | Question | Answer |
 |---|---|
 | **What problem does this solve?** | Manual API test writing is slow and doesn't keep pace with spec changes; this generates comprehensive, maintainable test suites from an OpenAPI spec |
-| **Why is this necessary today?** | It's the second MVP module and the core value proposition of QPilot — generating tests from artifacts |
+| **Why is this necessary today?** | It's the second MVP module and the core value proposition of CypherPilot — generating tests from artifacts |
 | **What simpler alternative exists?** | Template-only generation (no AI) — produces mechanical tests without intelligent assertions or edge cases |
 | **Why was that rejected?** | Template-only tests are low-value; users can write those themselves. The AI's ability to infer intent is the differentiator |
 | **How does this help evolution?** | The module follows the proven Phase 3 pattern; the spec parser and pytest generator are reusable for future API-related features |

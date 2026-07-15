@@ -1,8 +1,8 @@
-# QPilot — Product Vision
+# CypherPilot — Product Vision
 
 ## Elevator Pitch
 
-QPilot is an open-core **Quality Engineering Platform** that helps QA engineers and SDETs analyze requirements, generate test suites, and diagnose automation failures — using AI as an accelerator, not a crutch. It integrates into existing workflows rather than replacing them.
+CypherPilot is an open-core **Quality Engineering Platform** that helps QA engineers and SDETs analyze requirements, generate test suites, and diagnose automation failures — using AI as an accelerator, not a crutch. It integrates into existing workflows rather than replacing them.
 
 ## Problem Statement
 
@@ -15,7 +15,7 @@ Software quality engineering involves repetitive, high-cognitive-load tasks that
 
 ## Solution
 
-QPilot is a **structured, artifact-driven web application** where engineers:
+CypherPilot is a **structured, artifact-driven web application** where engineers:
 
 1. Upload or reference engineering artifacts (requirements docs, OpenAPI specs, test logs, screenshots).
 2. Receive structured, production-quality outputs (test cases, PyTest suites, root-cause analyses).
@@ -25,7 +25,7 @@ AI powers the analysis; the platform owns the workflow.
 
 ## Target Users
 
-| Persona | Primary Need | How QPilot Helps |
+| Persona | Primary Need | How CypherPilot Helps |
 |---|---|---|
 | **QA Automation Engineer** | Write thorough test suites efficiently | Generate test cases from requirements, generate API tests from specs |
 | **SDET** | Maintain reliable CI pipelines | Diagnose automation failures with root cause analysis |
@@ -43,7 +43,7 @@ AI powers the analysis; the platform owns the workflow.
 
 ## Key Differentiators
 
-| Instead of… | QPilot does… |
+| Instead of… | CypherPilot does… |
 |---|---|
 | ChatGPT / Claude chat | Structured upload → structured output workflow |
 | AI code generators (GitHub Copilot, Cursor) | Full test case design, not just code completion |

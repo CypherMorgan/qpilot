@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 #
-# QPilot Frontend — Multi-stage Docker image
+# CypherPilot Frontend — Multi-stage Docker image
 # =============================================
 #
 # Builder stage: Builds the React + Vite SPA.
@@ -10,8 +10,8 @@
 #   docker compose up --build
 #
 # Usage (production build)
-#   docker build -t qpilot-frontend:latest frontend/
-#   docker run --rm -p 3000:80 qpilot-frontend:latest
+#   docker build -t cypherpilot-frontend:latest frontend/
+#   docker run --rm -p 3000:80 cypherpilot-frontend:latest
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # Stage 1 — Builder

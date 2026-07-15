@@ -1,4 +1,4 @@
-# QPilot — Feature Roadmap
+# CypherPilot — Feature Roadmap
 
 > A living document tracking the planned evolution of the platform. Updated as priorities shift and lessons are learned.
 

@@ -1,6 +1,6 @@
-# QPilot — MVP Scope
+# CypherPilot — MVP Scope
 
-## Release: QPilot v0.1.0 — "Foundation" (Phase 2)
+## Release: CypherPilot v0.1.0 — "Foundation" (Phase 2)
 
 **Goal:** Establish the platform skeleton — backend, frontend, database, AI pipeline, and developer infrastructure — with zero business features.
 
@@ -23,13 +23,13 @@
 
 ---
 
-## Release: QPilot v0.2.0 — "Requirement Analysis" (MVP Module 1)
+## Release: CypherPilot v0.2.0 — "Requirement Analysis" (MVP Module 1)
 
 **Goal:** QA engineers can paste or upload a feature requirement and receive structured test case suggestions.
 
 **User Story:**
 
-> As a QA engineer, I want to upload a requirements document (Markdown or plain text) so that QPilot generates a comprehensive set of test cases including functional, negative, boundary, and edge cases with acceptance criteria.
+> As a QA engineer, I want to upload a requirements document (Markdown or plain text) so that CypherPilot generates a comprehensive set of test cases including functional, negative, boundary, and edge cases with acceptance criteria.
 
 **Deliverables:**
 
@@ -50,13 +50,13 @@
 
 ---
 
-## Release: QPilot v0.3.0 — "API Test Generation" (MVP Module 2)
+## Release: CypherPilot v0.3.0 — "API Test Generation" (MVP Module 2)
 
 **Goal:** QA engineers can upload an OpenAPI 3.x specification and receive a downloadable PyTest test suite.
 
 **User Story:**
 
-> As a QA engineer, I want to upload an OpenAPI specification so that QPilot generates a complete PyTest API test suite covering all endpoints, status codes, request/response schemas, and error scenarios.
+> As a QA engineer, I want to upload an OpenAPI specification so that CypherPilot generates a complete PyTest API test suite covering all endpoints, status codes, request/response schemas, and error scenarios.
 
 **Deliverables:**
 
@@ -79,13 +79,13 @@
 
 ---
 
-## Release: QPilot v0.4.0 — "Automation Failure Analysis" (MVP Module 3)
+## Release: CypherPilot v0.4.0 — "Automation Failure Analysis" (MVP Module 3)
 
 **Goal:** QA engineers can upload automation failure artifacts and receive structured root-cause analysis.
 
 **User Story:**
 
-> As a QA engineer, I want to upload test failure logs, screenshots, and page source so that QPilot analyzes the failure and provides a root cause, confidence score, suggested fix, and prevention recommendation.
+> As a QA engineer, I want to upload test failure logs, screenshots, and page source so that CypherPilot analyzes the failure and provides a root cause, confidence score, suggested fix, and prevention recommendation.
 
 **Deliverables:**
 

@@ -1,5 +1,5 @@
 #!/bin/sh
-# docker-entrypoint.sh — QPilot container entrypoint
+# docker-entrypoint.sh — CypherPilot container entrypoint
 #
 # Runs database migrations on every startup, then hands off to the
 # main process (uvicorn).  This ensures the database schema is always

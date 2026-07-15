@@ -1,7 +1,7 @@
 """AnalysisSession ORM model.
 
 Represents a single AI-powered analysis session — the root entity of
-the QPilot domain.  Every analysis (requirement analysis, API test
+the CypherPilot domain.  Every analysis (requirement analysis, API test
 generation, failure analysis) is captured as a session.
 
 Schema (evolved for Phase 3 — Requirement Analysis)::
@@ -42,7 +42,7 @@ from app.infrastructure.models.base import TimestampMixin, UUIDMixin
 
 
 class AnalysisSession(Base, UUIDMixin, TimestampMixin):
-    """An analysis session — root aggregate of the QPilot domain."""
+    """An analysis session — root aggregate of the CypherPilot domain."""
 
     __tablename__ = "analysis_sessions"
 

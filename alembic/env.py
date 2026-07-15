@@ -43,7 +43,7 @@ def run_migrations_offline() -> None:
     """
     sync_url = os.environ.get(
         "DATABASE_SYNC_URL",
-        config.get_main_option("sqlalchemy.url", "postgresql://localhost:5432/qpilot"),
+        config.get_main_option("sqlalchemy.url", "postgresql://localhost:5432/cypherpilot"),
     )
 
     context.configure(
@@ -68,7 +68,7 @@ async def run_async_migrations() -> None:
     """Run migrations in 'online' mode using an async engine."""
     async_url = os.environ.get(
         "DATABASE_URL",
-        "postgresql+asyncpg://postgres:postgres@localhost:5432/qpilot",
+        "postgresql+asyncpg://postgres:postgres@localhost:5432/cypherpilot",
     )
 
     connectable = create_async_engine(async_url, poolclass=pool.NullPool)

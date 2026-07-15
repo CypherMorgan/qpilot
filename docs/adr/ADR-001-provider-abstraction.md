@@ -5,7 +5,7 @@
 | **Status** | Accepted |
 | **Date** | 2026-07-01 |
 | **Last Updated** | 2026-07-02 |
-| **Author(s)** | QPilot Engineering Team |
+| **Author(s)** | CypherPilot Engineering Team |
 | **Supersedes** | None |
 | **Superseded by** | N/A |
 
@@ -13,7 +13,7 @@
 
 ## Context
 
-QPilot provides AI-powered analysis across multiple feature modules (Requirement Analysis, API Test Generation, Failure Analysis). These modules need to send prompts to AI models and receive structured responses.
+CypherPilot provides AI-powered analysis across multiple feature modules (Requirement Analysis, API Test Generation, Failure Analysis). These modules need to send prompts to AI models and receive structured responses.
 
 The platform has chosen **OpenRouter** as its default MVP provider (OpenAI-compatible API, no age verification, free-tier models, single-access to multiple open models), but the product vision requires:
 - **Provider agnosticism** — users should choose their preferred provider through configuration
@@ -34,7 +34,7 @@ This coupling would make provider switching a multi-module refactor and make uni
 
 ## Problem Statement
 
-How can QPilot support multiple AI providers (OpenRouter, Ollama, OpenAI, Anthropic Claude, Google Gemini, Groq) without coupling business logic to any specific provider's SDK, API format, or authentication mechanism?
+How can CypherPilot support multiple AI providers (OpenRouter, Ollama, OpenAI, Anthropic Claude, Google Gemini, Groq) without coupling business logic to any specific provider's SDK, API format, or authentication mechanism?
 
 More specifically:
 
@@ -594,7 +594,7 @@ The Provider Abstraction is **justified** because:
 2. **It aligns with the product vision** — provider agnosticism is a stated requirement
 3. **The cost is minimal** — ~50 lines of shared code + one adapter per provider
 4. **The break-even is immediate** — even with one provider, the testability benefit justifies the abstraction
-5. **It demonstrates architectural maturity** — this is the single strongest signal that QPilot is not "another AI wrapper"
+5. **It demonstrates architectural maturity** — this is the single strongest signal that CypherPilot is not "another AI wrapper"
 
 **Abstraction question answers (per engineering rule):**
 

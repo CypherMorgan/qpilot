@@ -166,16 +166,16 @@ E   +  where 0 = <MagicMock name='smtp.sendmsg' call_count>.call_count
     description: "Container crashes on startup in staging cluster",
     category: "environment",
     sourceType: "ci_log",
-    content: `STATUS: CrashLoopBackOff — pod qpilot-api-7d9f8c6b4-abcde
+    content: `STATUS: CrashLoopBackOff — pod cypherpilot-api-7d9f8c6b4-abcde
 
 ─── Cluster context ────────────────────────────────────────────────
-Cluster: qpilot-staging (EKS us-east-1)
-Namespace: qpilot-app
-Deployment: qpilot-api (replicas: 3)
-Image: 123456789012.dkr.ecr.us-east-1.amazonaws.com/qpilot-api:0.4.0
+Cluster: cypherpilot-staging (EKS us-east-1)
+Namespace: cypherpilot-app
+Deployment: cypherpilot-api (replicas: 3)
+Image: 123456789012.dkr.ecr.us-east-1.amazonaws.com/cypherpilot-api:0.4.0
 
 ─── Pod events ─────────────────────────────────────────────────────
-  $ kubectl describe pod qpilot-api-7d9f8c6b4-abcde
+  $ kubectl describe pod cypherpilot-api-7d9f8c6b4-abcde
 
   Events:
     Type     Reason     Age    From               Message
@@ -187,9 +187,9 @@ Image: 123456789012.dkr.ecr.us-east-1.amazonaws.com/qpilot-api:0.4.0
     Normal   Started    3m     kubelet            Started container
 
 ─── Container logs (last crash) ────────────────────────────────────
-  $ kubectl logs --previous qpilot-api-7d9f8c6b4-abcde
+  $ kubectl logs --previous cypherpilot-api-7d9f8c6b4-abcde
 
-  [2026-07-14 11:02:15] INFO: Starting QPilot API v0.4.0
+  [2026-07-14 11:02:15] INFO: Starting CypherPilot API v0.4.0
   [2026-07-14 11:02:15] INFO: Connecting to database...
   [2026-07-14 11:02:15] ERROR: Could not connect to database
     sqlalchemy.exc.OperationalError: (psycopg2.OperationalError)
@@ -200,22 +200,22 @@ Image: 123456789012.dkr.ecr.us-east-1.amazonaws.com/qpilot-api:0.4.0
   [2026-07-14 11:02:15] INFO: Shutting down gracefully...
 
 ─── Service discovery check ────────────────────────────────────────
-  $ kubectl get svc -n qpilot-infra postgres
+  $ kubectl get svc -n cypherpilot-infra postgres
   NAME       TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)
   postgres   ClusterIP   10.100.24.56  <none>        5432/TCP
 
-  $ kubectl exec -it temp-pod -- nslookup postgres.qpilot-infra.svc.cluster.local
+  $ kubectl exec -it temp-pod -- nslookup postgres.cypherpilot-infra.svc.cluster.local
   Server:    10.100.0.10
   Address:   10.100.0.10#53
-  ** server can't find postgres.qpilot-infra.svc.cluster.local: NXDOMAIN
+  ** server can't find postgres.cypherpilot-infra.svc.cluster.local: NXDOMAIN
 
 ─── Root cause ─────────────────────────────────────────────────────
   The pod is looking up postgres.staging.svc.cluster.local but the
-  service is in the qpilot-infra namespace — should be:
-    postgres.qpilot-infra.svc.cluster.local
+  service is in the cypherpilot-infra namespace — should be:
+    postgres.cypherpilot-infra.svc.cluster.local
 
   Fix: update DATABASE_URL in ConfigMap to use the correct namespace
-    postgresql://user:pass@postgres.qpilot-infra.svc.cluster.local:5432/qpilot`,
+    postgresql://user:pass@postgres.cypherpilot-infra.svc.cluster.local:5432/cypherpilot`,
   },
   {
     id: "env-mismatch",
@@ -345,7 +345,7 @@ src/components/DataGrid.tsx:124:18 - error TS2322: Type 'string | undefined'
 
 ─── Build step log ─────────────────────────────────────────────────
 $ npm run build
-> qpilot-frontend@0.4.0 build
+> cypherpilot-frontend@0.4.0 build
 > tsc --noEmit && vite build
 
 src/components/DataGrid.tsx:124:18 - error TS2322: ...
@@ -453,7 +453,7 @@ Timestamp: 2026-07-14 09:15:00 UTC
     cert-manager-webhook-5e4f2a1b3c-xyz78      1/1     Running
     cert-manager-6b8f2c1a4d-efg45              1/1     Running
 
-    $ kubectl get certificate -n qpilot-infra
+    $ kubectl get certificate -n cypherpilot-infra
     NAME              READY   REASON
     staging-tls       False   ✗ CertificateExpired  ← cert-manager failed to renew
     production-tls    True    ✓ Ready
@@ -477,7 +477,7 @@ Timestamp: 2026-07-14 09:15:00 UTC
 
 ─── CI run details ─────────────────────────────────────────────────
 Job: deploy-to-staging
-Runner: qpilot-self-hosted (EC2)
+Runner: cypherpilot-self-hosted (EC2)
 Step: aws eks update-kubeconfig
 Trigger: push to main (merged PR #842)
 Timestamp: 2026-07-14 16:30:00 UTC
@@ -488,7 +488,7 @@ Timestamp: 2026-07-14 16:30:00 UTC
   An error occurred (ExpiredToken) when calling the GetCallerIdentity
   operation: The security token included in the request is expired
 
-  Current IAM role: arn:aws:iam::123456789012:role/qpilot-ci-role
+  Current IAM role: arn:aws:iam::123456789012:role/cypherpilot-ci-role
   Session expiry: 2026-07-14 12:00:00 UTC (expired 4h 30m ago)
 
 ─── CI pipeline timeline ───────────────────────────────────────────
@@ -506,10 +506,10 @@ Timestamp: 2026-07-14 16:30:00 UTC
   Total time: 7m 4s — failed at 6m 29s
 
 ─── Credential chain investigation ─────────────────────────────────
-  $ aws sts assume-role --role-arn arn:aws:iam::...:role/qpilot-ci-role
+  $ aws sts assume-role --role-arn arn:aws:iam::...:role/cypherpilot-ci-role
 
   Credentials used were generated by GitHub Actions OIDC:
-    • Role: qpilot-ci-role
+    • Role: cypherpilot-ci-role
     • Max session duration: 5h (configured in IAM)
     • Actual session duration before use: 4h 30m
 
@@ -521,8 +521,8 @@ Timestamp: 2026-07-14 16:30:00 UTC
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
-        role-to-assume: arn:aws:iam::123456789012:role/qpilot-ci-role
-        role-session-name: qpilot-deploy-$\{{ github.run_id }}
+        role-to-assume: arn:aws:iam::123456789012:role/cypherpilot-ci-role
+        role-session-name: cypherpilot-deploy-$\{{ github.run_id }}
         aws-region: us-east-1
         role-duration-seconds: 5400  # ← 1.5h (session duration 90 min)
 
@@ -534,7 +534,7 @@ Timestamp: 2026-07-14 16:30:00 UTC
   Increase role-duration-seconds to 28800 (8h) in deploy.yml:
     role-duration-seconds: 28800
   Also set max session duration to 12h on the IAM role:
-    aws iam update-role --role-name qpilot-ci-role --max-session-duration 43200
+    aws iam update-role --role-name cypherpilot-ci-role --max-session-duration 43200
   Or use a separate shorter-lived role for the build vs deploy steps`,
   },
 ];

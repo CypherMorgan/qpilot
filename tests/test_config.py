@@ -14,8 +14,8 @@ def test_config_defaults(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("AI__PROVIDER", raising=False)
     monkeypatch.delenv("AI__OPENROUTER_API_KEY", raising=False)
     config = AppConfig(_env_file=None)
-    assert config.app_name == "QPilot"
-    assert config.app_version == "0.4.1"
+    assert config.app_name == "CypherPilot"
+    assert config.app_version == "0.4.5"
     assert config.log_level == "INFO"
     assert config.ai.provider == ""
     assert config.ai.openrouter_model == "openai/gpt-4o-mini"
@@ -24,11 +24,11 @@ def test_config_defaults(monkeypatch: pytest.MonkeyPatch) -> None:
 
 def test_config_loads_from_env(monkeypatch: pytest.MonkeyPatch) -> None:
     """Environment variables override defaults."""
-    monkeypatch.setenv("APP_NAME", "QPilot-Test")
+    monkeypatch.setenv("APP_NAME", "CypherPilot-Test")
     monkeypatch.setenv("LOG_LEVEL", "DEBUG")
 
     config = AppConfig(_env_file=None)
-    assert config.app_name == "QPilot-Test"
+    assert config.app_name == "CypherPilot-Test"
     assert config.log_level == "DEBUG"
 
 

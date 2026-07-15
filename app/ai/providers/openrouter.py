@@ -93,7 +93,7 @@ class OpenRouterProvider:
                 headers={
                     "Authorization": f"Bearer {self._api_key}",
                     "Content-Type": "application/json",
-                    "HTTP-Referer": "https://github.com/qpilot",  # OpenRouter ranking
+                    "HTTP-Referer": "https://github.com/CypherMorgan/cypherpilot",  # OpenRouter ranking
                 },
                 json=payload,
             )

@@ -1,6 +1,6 @@
 # C4 Level 1 — System Context Diagram
 
-> **Purpose:** Show QPilot as a black box — who uses it, what it depends on, and the boundaries of the system.
+> **Purpose:** Show CypherPilot as a black box — who uses it, what it depends on, and the boundaries of the system.
 >
 > **Audience:** Technical and non-technical stakeholders. This is the "elevator pitch" of the architecture.
 
@@ -10,11 +10,11 @@
 
 ```mermaid
 C4Context
-  title System Context — QPilot (MVP)
+  title System Context — CypherPilot (MVP)
 
   Person(qa, "QA Engineer / SDET", "Primary user — uploads artifacts, receives structured analysis")
 
-  System(qpilot, "QPilot", "Quality Engineering Platform — artifact-driven analysis using AI")
+  System(cypherpilot, "CypherPilot", "Quality Engineering Platform — artifact-driven analysis using AI")
 
   System_Ext(gemini, "Google Gemini API", "MVP — AI analysis provider")
   System_Ext(ollama, "Ollama (Local LLM)", "Future — self-hosted AI, no internet required")
@@ -22,12 +22,12 @@ C4Context
   System_Ext(jira, "Jira API", "Future — bug report generation, ticket creation")
   System_Ext(allure, "Allure Reports", "Future — test report ingestion and analysis")
 
-  Rel(qa, qpilot, "Uploads artifacts, views and exports analysis results", "HTTPS (browser)")
-  Rel(qpilot, gemini, "Sends structured prompts, receives JSON responses", "HTTPS / REST")
-  Rel(qpilot, ollama, "Future — same abstraction, different adapter", "HTTPS / REST")
-  Rel(qpilot, github, "Future — reads PR diffs, posts test suggestions", "HTTPS / REST")
-  Rel(qpilot, jira, "Future — creates bug tickets", "HTTPS / REST")
-  Rel(qpilot, allure, "Future — ingests Allure XML/JSON for analysis")
+  Rel(qa, cypherpilot, "Uploads artifacts, views and exports analysis results", "HTTPS (browser)")
+  Rel(cypherpilot, gemini, "Sends structured prompts, receives JSON responses", "HTTPS / REST")
+  Rel(cypherpilot, ollama, "Future — same abstraction, different adapter", "HTTPS / REST")
+  Rel(cypherpilot, github, "Future — reads PR diffs, posts test suggestions", "HTTPS / REST")
+  Rel(cypherpilot, jira, "Future — creates bug tickets", "HTTPS / REST")
+  Rel(cypherpilot, allure, "Future — ingests Allure XML/JSON for analysis")
 
   UpdateLayoutConfig($c4ShapeInRow="2", $c4BoundaryInRow="1")
 ```
@@ -35,7 +35,7 @@ C4Context
 > **Diagram Legend:**
 > - **Solid boxes** = In-scope for MVP
 > - **Dashed boxes** = Post-MVP / future integration
-> - The system boundary box encloses everything within QPilot's control
+> - The system boundary box encloses everything within CypherPilot's control
 >
 > *Note: Mermaid renders all `System_Ext` elements identically. The "Future" prefix in labels is the visual convention — see the External Systems table below for the definitive scope classification.*
 
@@ -47,7 +47,7 @@ C4Context
 
 | Attribute | Value |
 |---|---|
-| **Description** | The primary user of QPilot. Could be a QA Automation Engineer writing test suites, an SDET debugging pipeline failures, or a manual QA transitioning to automation. |
+| **Description** | The primary user of CypherPilot. Could be a QA Automation Engineer writing test suites, an SDET debugging pipeline failures, or a manual QA transitioning to automation. |
 | **Interaction model** | Uploads artifacts via browser, navigates structured results, copies/exports generated outputs. |
 | **Technical context** | Comfortable with Python, PyTest, testing frameworks, and CI/CD concepts. Not necessarily an AI/ML specialist. |
 
@@ -55,7 +55,7 @@ C4Context
 
 ---
 
-### System: QPilot
+### System: CypherPilot
 
 | Attribute | Value |
 |---|---|
@@ -64,7 +64,7 @@ C4Context
 | **Technology** | Python 3.12+ / FastAPI (backend), React + TypeScript + Vite (frontend), PostgreSQL 16 (database). |
 | **Key property** | AI is an implementation detail. The platform exposes structured workflows, not a chat interface. |
 
-**System boundary justification:** QPilot owns the workflow, storage, and business logic. It delegates AI computation to external providers but controls prompt construction, response parsing, and output validation. This boundary ensures that changing providers does not affect the user experience or the quality of outputs.
+**System boundary justification:** CypherPilot owns the workflow, storage, and business logic. It delegates AI computation to external providers but controls prompt construction, response parsing, and output validation. This boundary ensures that changing providers does not affect the user experience or the quality of outputs.
 
 ---
 
@@ -98,7 +98,7 @@ C4Context
 | **Jira API** | Bug Generator v0.6.0 | Create tickets via REST API with structured bug reports |
 | **GitHub API** | PR Review Assistant v0.8.0 | Read PR diffs via REST API, post comments with test suggestions |
 
-**Design principle:** QPilot should never depend on any external system being available. If Gemini is unreachable, the platform should report a clear error, not crash or produce garbage. Every integration is treated as a replaceable adapter.
+**Design principle:** CypherPilot should never depend on any external system being available. If Gemini is unreachable, the platform should report a clear error, not crash or produce garbage. Every integration is treated as a replaceable adapter.
 
 ---
 
@@ -107,7 +107,7 @@ C4Context
 ### Request Flow (MVP)
 
 ```
-QA Engineer                 QPilot                  Google Gemini
+QA Engineer                 CypherPilot                  Google Gemini
     │                         │                         │
     │  1. Upload artifact     │                         │
     │────────────────────────>│                         │
@@ -130,7 +130,7 @@ QA Engineer                 QPilot                  Google Gemini
 ```
 
 **Key observations:**
-- QPilot is the orchestrator — it controls the entire flow
+- CypherPilot is the orchestrator — it controls the entire flow
 - The AI provider is a stateless compute resource
 - All prompts are constructed server-side from versioned templates
 - All responses are validated against Pydantic models before reaching the user
@@ -153,7 +153,7 @@ Instead of structured workflows, we could have built a conversational interface 
 | **Engineering complexity** | Lower (simpler UI) | Higher (forms, validation, pipelines) |
 | **Portfolio impact** | Looks like every other AI wrapper | Demonstrates platform engineering |
 
-**Decision:** Structured workflows. QPilot is an engineering platform, not a chatbot. The added complexity of structured workflows is a feature, not a bug — it demonstrates engineering rigor.
+**Decision:** Structured workflows. CypherPilot is an engineering platform, not a chatbot. The added complexity of structured workflows is a feature, not a bug — it demonstrates engineering rigor.
 
 ### Alternative 2: Direct Client-to-AI (Rejected)
 

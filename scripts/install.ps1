@@ -1,14 +1,14 @@
 <#
 .SYNOPSIS
-    QPilot — Install / Uninstall Script (Windows)
+    CypherPilot — Install / Uninstall Script (Windows)
 .DESCRIPTION
-    One-command install of QPilot with full inline progress.
+    One-command install of CypherPilot with full inline progress.
 
     Install:
-        irm https://raw.githubusercontent.com/CypherMorgan/qpilot/main/scripts/install.ps1 | iex
+        irm https://raw.githubusercontent.com/CypherMorgan/cypherpilot/main/scripts/install.ps1 | iex
 
     Uninstall:
-        $env:QPILOT_UNINSTALL = "1"; irm https://raw.githubusercontent.com/CypherMorgan/qpilot/main/scripts/install.ps1 | iex
+        $env:CYPHERPILOT_UNINSTALL = "1"; irm https://raw.githubusercontent.com/CypherMorgan/cypherpilot/main/scripts/install.ps1 | iex
 
     Or run locally:
         .\scripts\install.ps1          # Install
@@ -20,9 +20,9 @@
 param([switch]$Uninstall)
 
 # ── Configuration ────────────────────────────────────────────────────────────
-$RepoUrl     = "https://github.com/CypherMorgan/qpilot.git"
+$RepoUrl     = "https://github.com/CypherMorgan/cypherpilot.git"
 $Branch      = "master"
-$InstallDir  = if ($env:QPILOT_HOME) { $env:QPILOT_HOME } else { "$env:USERPROFILE\.qpilot" }
+$InstallDir  = if ($env:CYPHERPILOT_HOME) { $env:CYPHERPILOT_HOME } else { "$env:USERPROFILE\.cypherpilot" }
 $Version     = "0.4.5"
 
 # ── Colors (PowerShell 5+ compatible) ───────────────────────────────────────
@@ -50,10 +50,10 @@ function Test-Command($cmd) {
 }
 
 # ── Install ──────────────────────────────────────────────────────────────────
-function Install-QPilot {
+function Install-CypherPilot {
     Write-Host ""
     Write-Host "╔══════════════════════════════════════════════════╗" -ForegroundColor White
-    Write-Host "║        QPilot v$Version — Installer           ║" -ForegroundColor White
+    Write-Host "║        CypherPilot v$Version — Installer           ║" -ForegroundColor White
     Write-Host "╚══════════════════════════════════════════════════╝" -ForegroundColor White
     Write-Host ""
 
@@ -71,7 +71,7 @@ function Install-QPilot {
     Write-Ok "Python: $pyVer"
 
     # ── Step 2: Clone / update repository ───────────────────────────────────
-    Write-Step "Getting QPilot source"
+    Write-Step "Getting CypherPilot source"
 
     if (Test-Path $InstallDir) {
         Write-Info "Updating existing installation in $InstallDir"
@@ -141,8 +141,8 @@ function Install-QPilot {
         Write-Info "Creating .env from .env.example (SQLite by default)"
         Copy-Item ".env.example" ".env"
         # Switch to SQLite
-        (Get-Content ".env") -replace 'postgresql\+asyncpg://.*', 'sqlite+aiosqlite:///./qpilot.db' | Set-Content ".env"
-        (Get-Content ".env") -replace 'postgresql://.*', 'sqlite:///./qpilot.db' | Set-Content ".env"
+        (Get-Content ".env") -replace 'postgresql\+asyncpg://.*', 'sqlite+aiosqlite:///./cypherpilot.db' | Set-Content ".env"
+        (Get-Content ".env") -replace 'postgresql://.*', 'sqlite:///./cypherpilot.db' | Set-Content ".env"
         Write-Ok ".env created with SQLite"
     } else {
         Write-Info ".env already exists, keeping it"
@@ -163,14 +163,14 @@ cd /d "$InstallDir"
 call "$venvPath\Scripts\activate.bat"
 uvicorn app.main:app --host 0.0.0.0 --port 8000
 "@ | Out-File -FilePath "$InstallDir\start.bat" -Encoding ASCII
-    Write-Ok "Created $InstallDir\start.bat — double-click to run QPilot"
+    Write-Ok "Created $InstallDir\start.bat — double-click to run CypherPilot"
 
     # Create uninstall batch file
 @"
 @echo off
-echo Removing QPilot...
+echo Removing CypherPilot...
 rmdir /s /q "$InstallDir"
-echo QPilot has been removed.
+echo CypherPilot has been removed.
 pause
 "@ | Out-File -FilePath "$InstallDir\uninstall.bat" -Encoding ASCII
 
@@ -184,7 +184,7 @@ pause
     # ── Summary ─────────────────────────────────────────────────────────────
     Write-Host ""
     Write-Host "╔══════════════════════════════════════════════════╗" -ForegroundColor White
-    Write-Host "║          QPilot v$Version installed!           ║" -ForegroundColor White
+    Write-Host "║          CypherPilot v$Version installed!           ║" -ForegroundColor White
     Write-Host "╚══════════════════════════════════════════════════╝" -ForegroundColor White
     Write-Host ""
     Write-Host "  Install path:     $InstallDir" -ForegroundColor White
@@ -203,10 +203,10 @@ pause
 }
 
 # ── Uninstall ────────────────────────────────────────────────────────────────
-function Uninstall-QPilot {
+function Uninstall-CypherPilot {
     Write-Host ""
     Write-Host "╔══════════════════════════════════════════════════╗" -ForegroundColor White
-    Write-Host "║         QPilot — Uninstall                       ║" -ForegroundColor White
+    Write-Host "║         CypherPilot — Uninstall                       ║" -ForegroundColor White
     Write-Host "╚══════════════════════════════════════════════════╝" -ForegroundColor White
     Write-Host ""
 
@@ -244,7 +244,7 @@ function Uninstall-QPilot {
         Write-Warn "Close any programs using the directory and try again."
     } else {
         Write-Host ""
-        Write-Host "  ✓ QPilot has been completely removed." -ForegroundColor Green
+        Write-Host "  ✓ CypherPilot has been completely removed." -ForegroundColor Green
         Write-Host "    Restart your terminal to clear PATH changes." -ForegroundColor White
         Write-Host ""
     }
@@ -252,8 +252,8 @@ function Uninstall-QPilot {
 
 # ── Main ─────────────────────────────────────────────────────────────────────
 
-if ($Uninstall -or $env:QPILOT_UNINSTALL) {
-    Uninstall-QPilot
+if ($Uninstall -or $env:CYPHERPILOT_UNINSTALL) {
+    Uninstall-CypherPilot
 } else {
-    Install-QPilot
+    Install-CypherPilot
 }
