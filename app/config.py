@@ -86,6 +86,20 @@ class StorageConfig(BaseSettings):
     """Maximum upload file size in megabytes."""
 
 
+class RetentionConfig(BaseSettings):
+    """Session retention policy configuration.
+
+    Controls automatic cleanup of old analysis sessions.
+
+    Can be configured via ``RETENTION__RETENTION_DAYS`` or
+    ``SESSION_RETENTION_DAYS`` environment variable.
+    """
+
+    retention_days: int = Field(default=90)
+    """Number of days to keep analysis sessions. Sessions older than
+    this are eligible for automatic cleanup. Set to 0 to disable."""
+
+
 class AppConfig(BaseSettings):
     """Top-level application configuration."""
 
@@ -125,6 +139,7 @@ class AppConfig(BaseSettings):
     database: DatabaseConfig = Field(default_factory=DatabaseConfig)
     ai: AIConfig = Field(default_factory=AIConfig)
     storage: StorageConfig = Field(default_factory=StorageConfig)
+    retention: RetentionConfig = Field(default_factory=RetentionConfig)
 
     def validate_config(self) -> None:
         """Validate configuration at startup.

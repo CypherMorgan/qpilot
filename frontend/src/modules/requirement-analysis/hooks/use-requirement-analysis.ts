@@ -7,6 +7,7 @@ import {
   analyzeRequirements,
   getAnalysisSession,
   listAnalysisSessions,
+  deleteRequirementSession,
 } from "@/modules/requirement-analysis/services/requirement-analysis";
 
 const ANALYSIS_KEYS = {
@@ -51,5 +52,21 @@ export function useAnalysisSessions(page: number = 1) {
     queryKey: ANALYSIS_KEYS.sessions(page),
     queryFn: () => listAnalysisSessions(page),
     staleTime: 30_000,
+  });
+}
+
+/**
+ * Delete a requirement analysis session.
+ * Invalidates both the session list and the specific session cache.
+ */
+export function useDeleteRequirementSession() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (sessionId: string) => deleteRequirementSession(sessionId),
+    onSuccess: (_data, sessionId) => {
+      queryClient.invalidateQueries({ queryKey: ANALYSIS_KEYS.sessions(1) });
+      queryClient.removeQueries({ queryKey: ANALYSIS_KEYS.session(sessionId) });
+    },
   });
 }

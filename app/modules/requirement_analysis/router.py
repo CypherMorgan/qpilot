@@ -146,3 +146,17 @@ async def list_analysis_sessions(
         ).model_dump(),
     }
     return response
+
+
+@router.delete(
+    "/sessions/{session_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Delete analysis session",
+    description="Delete a requirement analysis session by ID.",
+)
+async def delete_analysis_session(
+    session_id: UUID,
+    service: RequirementAnalysisService = Depends(_get_service),
+) -> None:
+    """Delete a requirement analysis session."""
+    await service.delete_session(session_id)

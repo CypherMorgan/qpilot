@@ -6,6 +6,7 @@ import {
   analyzeFailure,
   getFailureSession,
   listFailureSessions,
+  deleteFailureSession,
 } from "@/modules/failure-analysis/services/failure-analysis";
 
 const FAILURE_KEYS = {
@@ -49,5 +50,21 @@ export function useFailureSessions(page: number = 1) {
     queryKey: FAILURE_KEYS.sessions(page),
     queryFn: () => listFailureSessions(page),
     staleTime: 30_000,
+  });
+}
+
+/**
+ * Delete a failure analysis session.
+ * Invalidates both the session list and the specific session cache.
+ */
+export function useDeleteFailureSession() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (sessionId: string) => deleteFailureSession(sessionId),
+    onSuccess: (_data, sessionId) => {
+      queryClient.invalidateQueries({ queryKey: FAILURE_KEYS.sessions() });
+      queryClient.removeQueries({ queryKey: FAILURE_KEYS.session(sessionId) });
+    },
   });
 }

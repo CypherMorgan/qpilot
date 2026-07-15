@@ -62,3 +62,12 @@ export async function listFailureSessions(
     total: meta?.pagination?.total ?? 0,
   };
 }
+
+/**
+ * Delete a failure analysis session by ID.
+ */
+export async function deleteFailureSession(
+  sessionId: string,
+): Promise<void> {
+  await apiClient.delete(`/failures/sessions/${sessionId}`);
+}

@@ -329,6 +329,22 @@ class ApiTestGenerationService:
             page_size=page_size,
         )
 
+    async def delete_session(self, session_id: UUID) -> None:
+        """Delete an API test generation session by ID.
+
+        Args:
+            session_id: UUID of the session to delete.
+
+        Raises:
+            NotFoundError: If the session does not exist.
+        """
+        deleted = await self._repository.delete(session_id)
+        if not deleted:
+            raise NotFoundError(
+                f"Analysis session not found: {session_id}",
+                detail={"session_id": str(session_id)},
+            )
+
     async def download_zip(self, session_id: UUID) -> bytes | None:
         """Get the ZIP archive bytes for a completed session.
 

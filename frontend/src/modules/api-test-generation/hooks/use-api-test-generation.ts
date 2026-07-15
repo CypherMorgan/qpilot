@@ -7,6 +7,7 @@ import {
   generateApiTests,
   getApiTestSession,
   listApiTestSessions,
+  deleteApiTestSession,
 } from "@/modules/api-test-generation/services/api-test-generation";
 
 const API_TEST_KEYS = {
@@ -51,5 +52,21 @@ export function useApiTestSessions(page: number = 1) {
     queryKey: API_TEST_KEYS.sessions(page),
     queryFn: () => listApiTestSessions(page),
     staleTime: 30_000,
+  });
+}
+
+/**
+ * Delete an API test generation session.
+ * Invalidates both the session list and the specific session cache.
+ */
+export function useDeleteApiTestSession() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (sessionId: string) => deleteApiTestSession(sessionId),
+    onSuccess: (_data, sessionId) => {
+      queryClient.invalidateQueries({ queryKey: API_TEST_KEYS.sessions(1) });
+      queryClient.removeQueries({ queryKey: API_TEST_KEYS.session(sessionId) });
+    },
   });
 }

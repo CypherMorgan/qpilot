@@ -50,3 +50,12 @@ export async function listApiTestSessions(
     total: response.data.meta.pagination.total,
   };
 }
+
+/**
+ * Delete an API test generation session by ID.
+ */
+export async function deleteApiTestSession(
+  sessionId: string,
+): Promise<void> {
+  await apiClient.delete(`/openapi/sessions/${sessionId}`);
+}

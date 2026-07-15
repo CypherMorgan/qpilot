@@ -13,14 +13,25 @@ import {
   FileQuestion,
   Hash,
   Terminal,
+  Trash2,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { LoadingState } from "@/components/loading-state";
 import { EmptyState } from "@/components/empty-state";
 import { ROUTES } from "@/lib/constants";
 import { cn } from "@/lib/utils";
-import { useFailureSessions } from "@/modules/failure-analysis/hooks/use-failure-analysis";
+import { useFailureSessions, useDeleteFailureSession } from "@/modules/failure-analysis/hooks/use-failure-analysis";
 import type { AnalysisSessionListItem } from "@/modules/failure-analysis/types";
 
 const PAGE_SIZE = 20;
@@ -36,6 +47,8 @@ export function FailureSessionsPage() {
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const { data, isLoading, isError, error } = useFailureSessions(page);
+  const deleteMutation = useDeleteFailureSession();
+  const [deleteTarget, setDeleteTarget] = useState<AnalysisSessionListItem | null>(null);
 
   const totalPages = data ? Math.ceil(data.total / PAGE_SIZE) : 0;
   const hasPrev = page > 1;
@@ -106,9 +119,40 @@ export function FailureSessionsPage() {
                     ),
                   )
                 }
+                onDelete={setDeleteTarget}
               />
             ))}
           </div>
+
+      {/* Delete confirmation dialog */}
+      <AlertDialog
+        open={deleteTarget !== null}
+        onOpenChange={(open) => { if (!open) setDeleteTarget(null); }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete this session?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. The session will be permanently removed.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (deleteTarget) {
+                  deleteMutation.mutate(deleteTarget.session_id, {
+                    onSuccess: () => setDeleteTarget(null),
+                  });
+                }
+              }}
+              disabled={deleteMutation.isPending}
+            >
+              {deleteMutation.isPending ? "Deleting..." : "Delete"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
           {/* Pagination */}
           {totalPages > 1 && (
@@ -151,9 +195,11 @@ export function FailureSessionsPage() {
 function SessionRow({
   session,
   onClick,
+  onDelete,
 }: {
   session: AnalysisSessionListItem;
   onClick: () => void;
+  onDelete: (session: AnalysisSessionListItem) => void;
 }) {
   const SourceIcon = SOURCE_ICONS[session.source_type ?? ""] ?? Terminal;
 
@@ -223,8 +269,21 @@ function SessionRow({
           </div>
         </div>
 
-        {/* Chevron */}
-        <ChevronRight className="mt-2 h-4 w-4 shrink-0 text-muted-foreground/40 transition-transform group-hover:translate-x-0.5" />
+        {/* Actions */}
+        <div className="flex items-center gap-1">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete(session);
+            }}
+            className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground/40 opacity-0 transition-all hover:bg-destructive/10 hover:text-destructive group-hover:opacity-100"
+            title="Delete session"
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+          </button>
+          <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground/40 transition-transform group-hover:translate-x-0.5" />
+        </div>
       </div>
     </button>
   );

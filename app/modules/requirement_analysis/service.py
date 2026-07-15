@@ -219,6 +219,22 @@ class RequirementAnalysisService:
             page_size=page_size,
         )
 
+    async def delete_session(self, session_id: UUID) -> None:
+        """Delete a requirement analysis session by ID.
+
+        Args:
+            session_id: UUID of the session to delete.
+
+        Raises:
+            NotFoundError: If the session does not exist.
+        """
+        deleted = await self._repository.delete(session_id)
+        if not deleted:
+            raise NotFoundError(
+                f"Analysis session not found: {session_id}",
+                detail={"session_id": str(session_id)},
+            )
+
     # ── Private helpers ─────────────────────────────────────────
 
     async def _call_provider(

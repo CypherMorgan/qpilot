@@ -177,3 +177,17 @@ async def download_generated_tests(
             "Content-Disposition": f'attachment; filename="generated-tests-{session_id}.zip"',
         },
     )
+
+
+@router.delete(
+    "/sessions/{session_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Delete generation session",
+    description="Delete an API test generation session by ID.",
+)
+async def delete_generation_session(
+    session_id: UUID,
+    service: ApiTestGenerationService = Depends(_get_service),
+) -> None:
+    """Delete an API test generation session."""
+    await service.delete_session(session_id)

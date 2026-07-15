@@ -50,3 +50,12 @@ export async function listAnalysisSessions(
     total: response.data.meta.pagination.total,
   };
 }
+
+/**
+ * Delete a requirement analysis session by ID.
+ */
+export async function deleteRequirementSession(
+  sessionId: string,
+): Promise<void> {
+  await apiClient.delete(`/requirements/sessions/${sessionId}`);
+}

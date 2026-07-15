@@ -1,12 +1,24 @@
 /** Session detail page — view a past API test generation result. */
 
+import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, FileQuestion, History } from "lucide-react";
+import { ArrowLeft, FileQuestion, History, Trash2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { ROUTES } from "@/lib/constants";
 import { GenerationResults } from "@/modules/api-test-generation/components/generation-results";
-import { useApiTestSession } from "@/modules/api-test-generation/hooks/use-api-test-generation";
+import { useApiTestSession, useDeleteApiTestSession } from "@/modules/api-test-generation/hooks/use-api-test-generation";
 import { LoadingState } from "@/components/loading-state";
 import { EmptyState } from "@/components/empty-state";
 
@@ -14,6 +26,8 @@ export function ApiTestSessionDetailPage() {
   const { sessionId } = useParams<{ sessionId: string }>();
   const navigate = useNavigate();
   const { data, isLoading, isError, error } = useApiTestSession(sessionId);
+  const deleteMutation = useDeleteApiTestSession();
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   return (
     <div className="mx-auto max-w-4xl space-y-6 p-6">
@@ -44,6 +58,42 @@ export function ApiTestSessionDetailPage() {
           <History className="h-3.5 w-3.5" />
           History
         </Button>
+        <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+          <AlertDialogTrigger asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="gap-1.5 text-xs text-destructive/80 hover:text-destructive"
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+              Delete
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete this session?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This action cannot be undone. The generation session will be
+                permanently removed.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() => {
+                  if (sessionId) {
+                    deleteMutation.mutate(sessionId, {
+                      onSuccess: () => navigate(ROUTES.API_TEST_SESSIONS),
+                    });
+                  }
+                }}
+                disabled={deleteMutation.isPending}
+              >
+                {deleteMutation.isPending ? "Deleting..." : "Delete"}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
 
       {/* Loading state */}
