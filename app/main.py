@@ -24,9 +24,9 @@ from app.api.v1.api import router as v1_router
 from app.config import AppConfig
 from app.exceptions import (
     ConfigurationError,
+    CypherPilotError,
     NotFoundError,
     ProviderError,
-    CypherPilotError,
     ValidationError,
     get_error_code,
 )
