@@ -10,6 +10,17 @@ interface ChangelogEntry {
 
 const entries: ChangelogEntry[] = [
   {
+    version: "0.4.6",
+    date: "2026-07-16",
+    title: "Session Cleanup & Retention",
+    items: [
+      "Delete analysis sessions — trash button on detail pages and list pages with confirmation dialog",
+      "Configurable retention policy — RETENTION__RETENTION_DAYS env var (default: 90 days, set to 0 to disable)",
+      "Bulk cleanup endpoint — DELETE /api/v1/cleanup/expired removes all expired sessions at once",
+      "Cleanup UI in Settings — Clean Up Old Sessions button with result feedback",
+    ],
+  },
+  {
     version: "0.4.5",
     date: "2026-07-14",
     title: "API Test Gen Presets",

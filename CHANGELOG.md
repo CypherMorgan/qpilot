@@ -4,6 +4,14 @@ All notable changes to CypherPilot are documented here.
 
 ---
 
+## v0.4.6 — Session Cleanup & Retention (2026-07-16)
+
+- **Delete analysis sessions** — trash button on detail pages and list pages with confirmation dialog
+- **Configurable retention policy** — `RETENTION__RETENTION_DAYS` env var (default: 90 days, set to 0 to disable)
+- **Bulk cleanup endpoint** — `DELETE /api/v1/cleanup/expired` removes all expired sessions at once
+- **Cleanup UI in Settings** — "Clean Up Old Sessions" button with result feedback
+- **Bump to v0.4.6** — 162 backend tests, 34 frontend tests, tsc, mypy, ruff all pass
+
 ## v0.4.5 — API Test Gen Presets (2026-07-14)
 
 - **5 real-world OpenAPI specs** — Payment Intents (Stripe-style), Issues & Repos (GitHub-style), Transactional Email (SendGrid-style), User Management (auth + admin), File Storage (S3-compatible)
