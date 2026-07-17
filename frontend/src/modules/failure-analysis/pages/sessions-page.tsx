@@ -1,6 +1,6 @@
 /** Sessions page — browse past failure analysis sessions. */
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
@@ -12,6 +12,7 @@ import {
   Cpu,
   FileQuestion,
   Hash,
+  Search,
   Terminal,
   Trash2,
 } from "lucide-react";
@@ -29,6 +30,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { LoadingState } from "@/components/loading-state";
 import { EmptyState } from "@/components/empty-state";
+import { SessionSearch } from "@/components/session-search";
 import { ROUTES } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { useFailureSessions, useDeleteFailureSession } from "@/modules/failure-analysis/hooks/use-failure-analysis";
@@ -49,10 +51,30 @@ export function FailureSessionsPage() {
   const { data, isLoading, isError, error } = useFailureSessions(page);
   const deleteMutation = useDeleteFailureSession();
   const [deleteTarget, setDeleteTarget] = useState<AnalysisSessionListItem | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
 
   const totalPages = data ? Math.ceil(data.total / PAGE_SIZE) : 0;
   const hasPrev = page > 1;
   const hasNext = data ? page * PAGE_SIZE < data.total : false;
+
+  // Client-side search & filter
+  const filteredItems = useMemo(() => {
+    if (!data) return [];
+    let items = data.items;
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      items = items.filter(
+        (s) =>
+          (s.title || "").toLowerCase().includes(q) ||
+          (s.input_summary || "").toLowerCase().includes(q),
+      );
+    }
+    if (statusFilter !== "all") {
+      items = items.filter((s) => s.status === statusFilter);
+    }
+    return items;
+  }, [data, searchQuery, statusFilter]);
 
   return (
     <div className="mx-auto max-w-4xl space-y-6 p-6">
@@ -73,6 +95,18 @@ export function FailureSessionsPage() {
           </p>
         </div>
       </div>
+
+      {/* Search & filter bar */}
+      {data && data.items.length > 0 && (
+        <SessionSearch
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          statusFilter={statusFilter}
+          onStatusFilterChange={setStatusFilter}
+          total={data.total}
+          filtered={filteredItems.length}
+        />
+      )}
 
       {/* Loading */}
       {isLoading && <LoadingState message="Loading sessions..." />}
@@ -103,11 +137,20 @@ export function FailureSessionsPage() {
         />
       )}
 
+      {/* No results from search/filter */}
+      {data && data.items.length > 0 && filteredItems.length === 0 && (
+        <EmptyState
+          icon={<Search className="h-12 w-12 text-muted-foreground" />}
+          title="No matching sessions"
+          description="Try a different search term or status filter."
+        />
+      )}
+
       {/* Session list */}
-      {data && data.items.length > 0 && (
+      {data && data.items.length > 0 && filteredItems.length > 0 && (
         <>
           <div className="space-y-2">
-            {data.items.map((session) => (
+            {filteredItems.map((session) => (
               <SessionRow
                 key={session.session_id}
                 session={session}

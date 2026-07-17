@@ -17,6 +17,7 @@ from typing import Any
 from fastapi import APIRouter, Request
 from structlog import get_logger
 
+from app.ai.registry import ProviderRegistry
 from app.domain.models import ResponseMeta
 from app.infrastructure.database import DatabaseManager
 
@@ -36,6 +37,24 @@ async def health_check(request: Request) -> dict[str, Any]:
     db_manager: DatabaseManager | None = getattr(
         request.app.state, "db_manager", None
     )
+    registry: ProviderRegistry | None = getattr(
+        request.app.state, "provider_registry", None
+    )
+
+    # Determine the active provider and model from config
+    active_provider: str | None = None
+    active_model: str | None = None
+    if config and hasattr(config, "ai"):
+        active_provider = config.ai.provider or None
+        if active_provider == "openrouter":
+            active_model = config.ai.openrouter_model
+        elif active_provider == "ollama":
+            active_model = config.ai.ollama_model
+        elif active_provider == "gemini":
+            active_model = config.ai.gemini_model
+    # Fall back to the first registered provider name if config is empty
+    if not active_provider and registry and registry.available:
+        active_provider = registry.available[0]
 
     # Check database connectivity
     db_check: dict[str, str | int] = {"status": "not_configured"}
@@ -52,7 +71,9 @@ async def health_check(request: Request) -> dict[str, Any]:
         "data": {
             "status": "healthy",
             "app_name": getattr(config, "app_name", "CypherPilot"),
-            "app_version": getattr(config, "app_version", "0.4.7"),
+            "app_version": getattr(config, "app_version", "0.4.8"),
+            "active_provider": active_provider,
+            "active_model": active_model,
             "checks": {
                 "database": db_check,
             },

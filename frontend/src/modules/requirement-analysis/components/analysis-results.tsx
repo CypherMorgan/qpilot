@@ -15,11 +15,8 @@ import {
   HelpCircle,
   Cpu,
   GanttChartSquare,
-  Download,
-  Copy,
 } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
 import { SectionCard } from "@/components/section-card";
 import {
   FunctionalTestCases,
@@ -33,6 +30,7 @@ import {
   AutomationCandidatesTable,
   PriorityAssessmentBlock,
 } from "@/modules/requirement-analysis/components/section-content";
+import { ExportActions } from "@/modules/requirement-analysis/components/export-actions";
 import type { RequirementAnalysisResult } from "@/modules/requirement-analysis/types";
 
 interface AnalysisResultsProps {
@@ -62,14 +60,7 @@ export function AnalysisResults({
             </p>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" size="sm">
-              <Download className="mr-2 h-4 w-4" />
-              Export
-            </Button>
-            <Button variant="outline" size="sm">
-              <Copy className="mr-2 h-4 w-4" />
-              Copy
-            </Button>
+            <ExportActions result={result} />
           </div>
         </div>
         {(provider || model) && (

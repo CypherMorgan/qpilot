@@ -4,7 +4,7 @@ Provides the complete workflow: paste failure output, attach artifact files,
 analyze, view results.
 */
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AlertCircle, ArrowLeft, History, Paperclip } from "lucide-react";
 
@@ -35,9 +35,19 @@ export function FailureAnalysisPage() {
   const [error, setError] = useState<string | null>(null);
   const [artifacts, setArtifacts] = useState<FileEntry[]>([]);
   const [result, setResult] = useState<AnalysisResponse | null>(null);
+  const [elapsed, setElapsed] = useState(0);
 
   const isSubmitting = isPending || isArtifactPending;
   const canSubmit = (content.trim().length > 0 || artifacts.length > 0) && !isSubmitting;
+
+  // Elapsed-time ticker while submitting
+  useEffect(() => {
+    if (isSubmitting) {
+      setElapsed(0);
+      const interval = setInterval(() => setElapsed((s) => s + 1), 1000);
+      return () => clearInterval(interval);
+    }
+  }, [isSubmitting]);
 
   const handleSubmit = async () => {
     setError(null);
@@ -124,6 +134,7 @@ export function FailureAnalysisPage() {
             onSourceTypeChange={setSourceType}
             title={title}
             onTitleChange={setTitle}
+            onSubmit={handleSubmit}
             disabled={isSubmitting}
           />
 
@@ -159,7 +170,7 @@ export function FailureAnalysisPage() {
                 : "The failure output is analyzed by AI to identify root causes, suggest fixes, and assess impact."}
             </p>
             <Button onClick={handleSubmit} disabled={!canSubmit} size="lg">
-              {isSubmitting ? "Analyzing..." : "Analyze Failure"}
+              {isSubmitting ? `Analyzing... (${elapsed}s)` : "Analyze Failure"}
             </Button>
           </div>
         </div>

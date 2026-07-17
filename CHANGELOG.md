@@ -4,6 +4,15 @@ All notable changes to CypherPilot are documented here.
 
 ---
 
+## v0.4.8 — Quality-of-Life Polish (2026-07-17)
+
+- **Fix dead Export/Copy buttons** in Requirement Analysis results — wired up the existing `ExportActions` component
+- **Dashboard AI Provider info** — health endpoint now populates `active_provider` and `active_model` so dashboard cards show real values
+- **`Ctrl+Enter` / `Cmd+Enter` to submit** — keyboard shortcut on all 3 analysis editors (failure, requirement, API test)
+- **Elapsed time on submit button** — shows "Analyzing... (14s)" instead of a static spinner during long AI operations
+- **Session history search & filter** — text search by title/summary + status filter (All / Completed / Failed / Processing) on all 3 session pages
+- **245 backend + 34 frontend tests**, tsc, mypy, ruff, vite build all pass
+
 ## v0.4.7 — Multi-Artifact Failure Analysis (2026-07-16)
 
 - **Upload artifacts** — drag-and-drop screenshots, JSON logs, HTML page source, and text files alongside failure output

@@ -4,7 +4,7 @@ Provides a text area for pasting requirements with source type
 selection (plain text, Markdown, acceptance criteria).
 */
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AlertCircle, FileText, Braces, ListChecks, BookOpen } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -51,6 +51,15 @@ export function RequirementEditor({
 }: RequirementEditorProps) {
   const [content, setContent] = useState("");
   const [sourceType, setSourceType] = useState<InputSourceType>("plain_text");
+  const [elapsed, setElapsed] = useState(0);
+
+  useEffect(() => {
+    if (isSubmitting) {
+      setElapsed(0);
+      const interval = setInterval(() => setElapsed((s) => s + 1), 1000);
+      return () => clearInterval(interval);
+    }
+  }, [isSubmitting]);
 
   const handleSubmit = () => {
     if (!content.trim()) return;
@@ -116,6 +125,12 @@ export function RequirementEditor({
         <textarea
           value={content}
           onChange={(e) => setContent(e.target.value)}
+          onKeyDown={(e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+              e.preventDefault();
+              handleSubmit();
+            }
+          }}
           placeholder={`Paste your requirements here...\n\nExample:\nThe system shall allow users to log in with email and password.\nUsers must be able to reset their password via email.\n...`}
           className="min-h-[200px] w-full resize-y rounded-lg border bg-background p-4 font-mono text-sm placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-ring"
           disabled={isSubmitting}
@@ -140,7 +155,7 @@ export function RequirementEditor({
           Requirements are analyzed by AI. Results are stored for future review.
         </p>
         <Button onClick={handleSubmit} disabled={!canSubmit}>
-          {isSubmitting ? "Analyzing..." : "Analyze Requirements"}
+          {isSubmitting ? `Analyzing... (${elapsed}s)` : "Analyze Requirements"}
         </Button>
       </div>
     </div>

@@ -10,6 +10,18 @@ interface ChangelogEntry {
 
 const entries: ChangelogEntry[] = [
   {
+    version: "0.4.8",
+    date: "2026-07-17",
+    title: "Quality-of-Life Polish",
+    items: [
+      "Fix dead Export/Copy buttons in Requirement Analysis — wired up the existing ExportActions component",
+      "Dashboard AI Provider info — health endpoint now populates active_provider and active_model so status cards show real values",
+      "Ctrl+Enter / Cmd+Enter to submit — keyboard shortcut on all 3 analysis editors",
+      "Elapsed time on submit button — shows 'Analyzing... (14s)' instead of a static spinner",
+      "Session history search & filter — text search by title/summary + status filter on all 3 session pages",
+    ],
+  },
+  {
     version: "0.4.7",
     date: "2026-07-16",
     title: "Multi-Artifact Failure Analysis",

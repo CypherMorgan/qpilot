@@ -20,6 +20,7 @@ interface FailureInputProps {
   onSourceTypeChange: (sourceType: InputSourceType) => void;
   title: string;
   onTitleChange: (title: string) => void;
+  onSubmit?: () => void;
   disabled?: boolean;
 }
 
@@ -62,6 +63,7 @@ export function FailureInput({
   title,
   onTitleChange,
   disabled = false,
+  onSubmit,
 }: FailureInputProps) {
   return (
     <div className="space-y-4">
@@ -140,6 +142,12 @@ export function FailureInput({
         <textarea
           value={content}
           onChange={(e) => onContentChange(e.target.value)}
+          onKeyDown={(e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+              e.preventDefault();
+              onSubmit?.();
+            }
+          }}
           placeholder={`Paste CI/CD logs, stack traces, or error output here...\n\nFAILED tests/integration/test_auth.py::test_login_success\nAssertionError: assert False\n  +  where False = <built-in method startswith of str object at 0x...>('eyJ')`}
           className="min-h-[300px] w-full resize-y rounded-lg border bg-background p-4 font-mono text-sm placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-ring"
           disabled={disabled}

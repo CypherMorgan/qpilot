@@ -4,7 +4,7 @@ Provides a text area for pasting OpenAPI specs with format
 selection (YAML or JSON) and optional configuration fields.
 */
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AlertCircle, FileCode, FileJson, BookOpen } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -42,6 +42,15 @@ export function SpecEditor({
   const [spec, setSpec] = useState("");
   const [specFormat, setSpecFormat] = useState<"yaml" | "json">("yaml");
   const [title, setTitle] = useState("");
+  const [elapsed, setElapsed] = useState(0);
+
+  useEffect(() => {
+    if (isSubmitting) {
+      setElapsed(0);
+      const interval = setInterval(() => setElapsed((s) => s + 1), 1000);
+      return () => clearInterval(interval);
+    }
+  }, [isSubmitting]);
 
   const handleSubmit = () => {
     if (!spec.trim()) return;
@@ -126,6 +135,12 @@ export function SpecEditor({
         <textarea
           value={spec}
           onChange={(e) => setSpec(e.target.value)}
+          onKeyDown={(e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+              e.preventDefault();
+              handleSubmit();
+            }
+          }}
           placeholder={`Paste your OpenAPI spec here...\n\nopenapi: "3.0.0"\ninfo:\n  title: Pet Store\n  version: "1.0.0"\npaths:\n  /pets:\n    get:\n      summary: List all pets\n      ...`}
           className="min-h-[300px] w-full resize-y rounded-lg border bg-background p-4 font-mono text-sm placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-ring"
           disabled={isSubmitting}
@@ -151,7 +166,7 @@ export function SpecEditor({
           can be downloaded as a ZIP archive.
         </p>
         <Button onClick={handleSubmit} disabled={!canSubmit}>
-          {isSubmitting ? "Generating..." : "Generate Tests"}
+          {isSubmitting ? `Generating... (${elapsed}s)` : "Generate Tests"}
         </Button>
       </div>
     </div>
