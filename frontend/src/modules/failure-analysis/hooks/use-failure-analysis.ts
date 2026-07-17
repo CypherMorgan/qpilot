@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { AnalysisRequest } from "@/modules/failure-analysis/types";
 import {
   analyzeFailure,
+  analyzeFailureWithArtifacts,
   getFailureSession,
   listFailureSessions,
   deleteFailureSession,
@@ -26,6 +27,28 @@ export function useAnalyzeFailure() {
     mutationFn: (request: AnalysisRequest) => analyzeFailure(request),
     onSuccess: () => {
       // Invalidate session list so it refreshes with the new session
+      queryClient.invalidateQueries({ queryKey: FAILURE_KEYS.sessions() });
+    },
+  });
+}
+
+/**
+ * Submit failure output with uploaded artifact files for analysis.
+ */
+export function useAnalyzeFailureWithArtifacts() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      content,
+      sourceType,
+      files,
+    }: {
+      content: string;
+      sourceType: string;
+      files: File[];
+    }) => analyzeFailureWithArtifacts(content, sourceType, files),
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: FAILURE_KEYS.sessions() });
     },
   });

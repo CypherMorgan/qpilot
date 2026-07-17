@@ -96,6 +96,15 @@ export interface FailureAnalysisResult {
 
 // ── API response ──────────────────────────────────────────────────
 
+export interface ArtifactMeta {
+  filename: string;
+  file_type: "text" | "image" | "other";
+  mime_type?: string;
+  file_size: number;
+  storage_path?: string;
+  content_preview?: string;
+}
+
 export interface AnalysisResponse {
   session_id: string;
   status: string;
@@ -104,6 +113,7 @@ export interface AnalysisResponse {
   model?: string | null;
   total_tokens?: number;
   latency_ms?: number;
+  artifacts?: ArtifactMeta[];
 }
 
 export interface AnalysisSessionListItem {

@@ -31,6 +31,33 @@ export async function analyzeFailure(
 }
 
 /**
+ * Submit failure output with uploaded artifact files for AI-powered analysis.
+ *
+ * Sends as multipart/form-data so files are included in the request.
+ */
+export async function analyzeFailureWithArtifacts(
+  content: string,
+  sourceType: string,
+  files: File[],
+): Promise<AnalysisResponse> {
+  const formData = new FormData();
+  formData.append("content", content);
+  formData.append("source_type", sourceType);
+  for (const file of files) {
+    formData.append("artifacts", file);
+  }
+
+  const response = await apiClient.post<ApiSuccessResponse<AnalysisResponse>>(
+    "/failures/analyze-with-artifacts",
+    formData,
+    {
+      headers: { "Content-Type": "multipart/form-data" },
+    },
+  );
+  return response.data.data;
+}
+
+/**
  * Retrieve a completed failure analysis session by ID.
  */
 export async function getFailureSession(

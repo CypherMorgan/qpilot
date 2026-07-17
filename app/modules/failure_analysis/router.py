@@ -9,7 +9,17 @@ from __future__ import annotations
 from typing import Any
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Query, Request, status
+from fastapi import (
+    APIRouter,
+    Depends,
+    File,
+    Form,
+    HTTPException,
+    Query,
+    Request,
+    UploadFile,
+    status,
+)
 from sqlalchemy.ext.asyncio import AsyncSession
 from structlog import get_logger
 
@@ -17,6 +27,7 @@ from app.domain.models import PaginationMeta, ResponseMeta
 from app.infrastructure.database import get_db
 from app.modules.failure_analysis.models import (
     AnalysisRequest,
+    InputSourceType,
 )
 from app.modules.failure_analysis.service import (
     FailureAnalysisService,
@@ -56,6 +67,8 @@ def _get_service(
         provider_registry=registry,
         prompt_manager=request.app.state.prompt_manager,
         active_provider=active_provider,
+        artifacts_dir=config.storage.artifacts_dir,
+        max_upload_size=config.storage.max_upload_size_mb * 1024 * 1024,
     )
 
 
@@ -83,6 +96,69 @@ async def analyze_failure(
     )
 
     result = await service.analyze(request)
+
+    response = {
+        "data": result.model_dump(mode="json"),
+        "meta": ResponseMeta(
+            request_id=getattr(http_request.state, "request_id", "") if http_request else "",
+        ).model_dump(),
+    }
+    return response
+
+
+@router.post(
+    "/analyze-with-artifacts",
+    response_model=dict,
+    status_code=status.HTTP_200_OK,
+    summary="Analyze failure with artifacts",
+    description=(
+        "Submit failure text plus optional file artifacts (screenshots, page source, "
+        "JSON logs, etc.) for AI-powered failure analysis. Supports multipart form data "
+        "with text fields and file uploads."
+    ),
+)
+async def analyze_failure_with_artifacts(
+    content: str = Form(default="", max_length=100_000),
+    source_type: str = Form(default="plain_text"),
+    title: str | None = Form(default=None),
+    context: str | None = Form(default=None),
+    output_format: str = Form(default="json"),
+    artifacts: list[UploadFile] = File(default=[]),
+    service: FailureAnalysisService = Depends(_get_service),
+    http_request: Request = None,  # type: ignore[assignment]
+) -> dict[str, Any]:
+    """Analyze a failure with optional uploaded artifact files."""
+    # If content is empty, build a placeholder from filenames so Pydantic
+    # validation (min_length=1) still passes.
+    effective_content = content
+    if not content.strip():
+        if not artifacts:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="Either 'content' or at least one 'artifacts' file is required.",
+            )
+        filenames = [f.filename or "unnamed" for f in artifacts if f.filename]
+        effective_content = f"[Artifact-only submission — files: {', '.join(filenames)}]"
+
+    request = AnalysisRequest(
+        content=effective_content,
+        source_type=InputSourceType(source_type),
+        title=title,
+        context=context,
+        output_format=output_format,
+    )
+
+    _logger.info(
+        "Multi-artifact failure analysis requested",
+        source_type=request.source_type.value,
+        content_length=len(request.content),
+        file_count=len([f for f in artifacts if f.filename]),
+    )
+
+    result = await service.analyze_with_artifacts(
+        request=request,
+        files=artifacts,
+    )
 
     response = {
         "data": result.model_dump(mode="json"),

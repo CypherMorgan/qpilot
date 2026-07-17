@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, FileQuestion, History, Trash2 } from "lucide-react";
+import { ArrowLeft, FileQuestion, History, Paperclip, Trash2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -118,13 +118,36 @@ export function FailureSessionDetailPage() {
 
       {/* Results */}
       {data && (
-        <AnalysisSummary
-          result={data.result}
-          provider={data.provider}
-          model={data.model}
-          totalTokens={data.total_tokens}
-          latencyMs={data.latency_ms}
-        />
+        <div className="space-y-6">
+          {data.artifacts && data.artifacts.length > 0 && (
+            <div className="rounded-xl border bg-card p-4">
+              <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold">
+                <Paperclip className="h-4 w-4" />
+                Attached Artifacts ({data.artifacts.length})
+              </h3>
+              <ul className="space-y-1.5">
+                {data.artifacts.map((a, i) => (
+                  <li key={i} className="flex items-center gap-3 text-sm">
+                    <span className="inline-flex h-6 w-6 items-center justify-center rounded bg-muted text-[10px] font-medium text-muted-foreground uppercase">
+                      {a.file_type === "image" ? "IMG" : a.file_type === "text" ? "TXT" : "BIN"}
+                    </span>
+                    <span className="font-medium">{a.filename}</span>
+                    <span className="text-xs text-muted-foreground">
+                      {(a.file_size / 1024).toFixed(1)} KB
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          <AnalysisSummary
+            result={data.result}
+            provider={data.provider}
+            model={data.model}
+            totalTokens={data.total_tokens}
+            latencyMs={data.latency_ms}
+          />
+        </div>
       )}
     </div>
   );

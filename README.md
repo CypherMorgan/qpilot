@@ -3,7 +3,7 @@
 **CypherPilot** is an AI-augmented quality engineering platform that helps QA engineers and SDETs analyze requirements, generate API test suites, and diagnose automation failures — using AI as an accelerator, not a crutch.
 
 > Created by **Cypher Morgan**
-![Version](https://img.shields.io/badge/version-0.4.6-blue)
+![Version](https://img.shields.io/badge/version-0.4.7-blue)
 ![Python](https://img.shields.io/badge/Python-3.12-blue)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.115-green)
 ![React](https://img.shields.io/badge/React-18-blue)
@@ -23,7 +23,7 @@
 
 See the full [Changelog](./CHANGELOG.md) for the complete release history.
 
-**Latest: v0.4.6** — Session Cleanup & Retention. [Read more](./CHANGELOG.md#v046--session-cleanup--retention-2026-07-16).
+**Latest: v0.4.7** — Multi-Artifact Failure Analysis. [Read more](./CHANGELOG.md#v047--multi-artifact-failure-analysis-2026-07-16).
 
 ## Features
 
@@ -260,7 +260,7 @@ uv run ruff check
 | **v0.4.4** | Requirement Analysis Presets — real-world product requirement examples | ✅ Done |
 | **v0.4.5** | API Test Generation Presets — real-world OpenAPI spec examples | ✅ Done |
 | **v0.4.6** | Session Cleanup & Retention — delete button + configurable retention policy | ✅ Done |
-| **v0.4.7** | Multi-Artifact Failure Analysis — file upload (screenshots, page source, JSON logs) | 🔜 Planned |
+| **v0.4.7** | Multi-Artifact Failure Analysis — file upload (screenshots, page source, JSON logs) | ✅ Done |
 | **v0.5.0** | Multi-user & Teams — authentication, user management, RBAC | 🔜 Planned |
 
 ---

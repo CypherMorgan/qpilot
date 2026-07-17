@@ -91,6 +91,28 @@ class AnalysisRequest(BaseModel):
     )
 
 
+# ── Multi-artifact input ─────────────────────────────────────────
+
+class ArtifactUpload(BaseModel):
+    """Reference to an uploaded artifact for analysis.
+
+    This model is populated server-side after file upload; it is not
+    sent by the client directly.
+    """
+
+    filename: str = Field(description="Original filename.")
+    file_type: str = Field(
+        description="Artifact type: 'text', 'image', or 'other'.",
+    )
+    mime_type: str = Field(default="", description="Detected MIME type.")
+    file_size: int = Field(default=0, description="File size in bytes.")
+    storage_path: str = Field(description="Relative path under artifacts directory.")
+    content_preview: str = Field(
+        default="",
+        description="First 500 characters for text files, empty for images.",
+    )
+
+
 # ── Shared models ─────────────────────────────────────────────────
 
 class StackFrame(BaseModel):
@@ -222,6 +244,10 @@ class AnalysisResponse(BaseModel):
     model: str | None = Field(default=None, description="AI model used.")
     total_tokens: int = Field(default=0, description="Total tokens consumed.")
     latency_ms: int = Field(default=0, description="AI call duration in milliseconds.")
+    artifacts: list[ArtifactUpload] = Field(
+        default_factory=list,
+        description="Uploaded artifact files attached to this analysis.",
+    )
 
 
 class AnalysisSessionListItem(BaseModel):

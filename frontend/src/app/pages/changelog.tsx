@@ -10,6 +10,17 @@ interface ChangelogEntry {
 
 const entries: ChangelogEntry[] = [
   {
+    version: "0.4.7",
+    date: "2026-07-16",
+    title: "Multi-Artifact Failure Analysis",
+    items: [
+      "Upload artifacts — drag-and-drop screenshots, JSON logs, HTML page source, and text files alongside failure output",
+      "Context-aware analysis — artifact content is read server-side and inlined into the AI prompt; images are stored for future vision-provider support",
+      "New POST /failures/analyze-with-artifacts endpoint — multipart form-data, keeps existing JSON endpoint backward-compatible",
+      "Artifact display — thumbnails and file-type icons in the analysis page and session detail view",
+    ],
+  },
+  {
     version: "0.4.6",
     date: "2026-07-16",
     title: "Session Cleanup & Retention",

@@ -4,6 +4,14 @@ All notable changes to CypherPilot are documented here.
 
 ---
 
+## v0.4.7 — Multi-Artifact Failure Analysis (2026-07-16)
+
+- **Upload artifacts** — drag-and-drop screenshots, JSON logs, HTML page source, and text files alongside failure output
+- **Context-aware analysis** — artifact content (text files) is read server-side and inlined into the AI prompt; images are stored for future vision-provider support
+- **`POST /failures/analyze-with-artifacts`** — new multipart/form-data endpoint keeps the existing JSON endpoint backward-compatible
+- **Artifact display** — thumbnails and file-type icons in the analysis page and session detail view
+- **245 backend + 34 frontend tests**, tsc, mypy, ruff, vite build all pass
+
 ## v0.4.6 — Session Cleanup & Retention (2026-07-16)
 
 - **Delete analysis sessions** — trash button on detail pages and list pages with confirmation dialog

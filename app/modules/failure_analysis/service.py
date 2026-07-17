@@ -7,13 +7,17 @@ Orchestrates the end-to-end analysis pipeline:
 4. Parse and validate the AI response
 5. Persist the session with results
 6. Return the structured analysis
+
+Also supports multi-artifact analysis with file uploads.
 """
 
 from __future__ import annotations
 
 import time
+from pathlib import Path
 from uuid import UUID
 
+from fastapi import UploadFile
 from sqlalchemy.ext.asyncio import AsyncSession
 from structlog import get_logger
 
@@ -34,10 +38,17 @@ from app.exceptions import (
     ProviderUnavailableError,
 )
 from app.infrastructure.models.analysis_session import AnalysisSession
+from app.modules.failure_analysis.artifact_service import (
+    ArtifactMeta,
+    build_artifact_context,
+    delete_artifact_files,
+    save_artifact,
+)
 from app.modules.failure_analysis.models import (
     AnalysisRequest,
     AnalysisResponse,
     AnalysisSessionListItem,
+    ArtifactUpload,
     FailureAnalysisResult,
 )
 from app.modules.failure_analysis.repository import (
@@ -61,11 +72,15 @@ class FailureAnalysisService:
         provider_registry: ProviderRegistry,
         prompt_manager: PromptManager,
         active_provider: str,
+        artifacts_dir: str = "./data/artifacts",
+        max_upload_size: int = 10 * 1024 * 1024,
     ) -> None:
         self._repository = FailureAnalysisRepository(db_session)
         self._provider_registry = provider_registry
         self._prompt_manager = prompt_manager
         self._active_provider = active_provider
+        self._artifacts_dir = str(Path(artifacts_dir).resolve())
+        self._max_upload_size = max_upload_size
 
     # ── Public API ──────────────────────────────────────────────
 
@@ -165,6 +180,165 @@ class FailureAnalysisService:
                 detail={"session_id": str(session.id)},
             ) from exc
 
+    async def analyze_with_artifacts(
+        self,
+        request: AnalysisRequest,
+        files: list[UploadFile],
+    ) -> AnalysisResponse:
+        """Run analysis with uploaded artifact files.
+
+        Accepts the same text request as ``analyze()``, plus a list of
+        uploaded files. Text files (JSON, HTML, logs, etc.) are read and
+        their contents are appended to the AI prompt. Image files are
+        stored for reference.
+
+        Args:
+            request: The validated analysis request.
+            files: List of uploaded files (FastAPI ``UploadFile``).
+
+        Returns:
+            The structured analysis response with artifact metadata.
+
+        Raises:
+            AnalysisError: If any step in the pipeline fails.
+        """
+        # 1. Create the session (status=PROCESSING)
+        # Use first filename as title when content was empty (placeholder text)
+        if not request.title and request.content.startswith("[Artifact-only submission"):
+            fallback_title = files[0].filename if files and files[0].filename else "Artifact Analysis"
+        elif not request.title:
+            fallback_title = _truncate_title(request.content) if request.content.strip() else "Untitled Analysis"
+        else:
+            fallback_title = None
+
+        session = AnalysisSession(
+            title=request.title or fallback_title,
+            analysis_type=AnalysisType.FAILURE_ANALYSIS,
+            status=AnalysisStatus.PROCESSING,
+            input_source_type=request.source_type.value,
+            input_content=request.content,
+            output_format=request.output_format,
+        )
+        session = await self._repository.create(session)
+        _logger.info(
+            "Multi-artifact analysis session created",
+            session_id=str(session.id),
+            file_count=len(files),
+        )
+
+        # 2. Save uploaded artifacts
+        artifact_metas: list[ArtifactMeta] = []
+        for upload in files:
+            if upload.filename:
+                meta = await save_artifact(
+                    upload=upload,
+                    artifacts_dir=self._artifacts_dir,
+                    session_id=session.id,
+                    max_size=self._max_upload_size,
+                )
+                artifact_metas.append(meta)
+
+        try:
+            # 3. Build the artifact context for the prompt
+            artifact_context = build_artifact_context(
+                self._artifacts_dir,
+                artifact_metas,
+            )
+
+            # 4. Combine original content with artifact context
+            combined_content = request.content
+            if artifact_context:
+                combined_content = (
+                    f"## User-Provided Failure Description\n\n"
+                    f"{request.content}"
+                    f"{artifact_context}"
+                )
+
+            # 5. Get the AI provider
+            provider = self._provider_registry.get(self._active_provider)
+
+            # 6. Render prompt templates with enriched context
+            prompt = self._prompt_manager.load(
+                analysis_type="failure-analysis",
+                context={
+                    "artifact": combined_content,
+                    "context": request.context or "",
+                },
+                version="v1",
+            )
+
+            # 7. Call the AI provider
+            ai_response = await self._call_provider(provider, prompt, session)
+
+            # 8. Parse the response into structured result
+            result = await self._parse_response(ai_response, session)
+
+            # 9. Store artifact metadata in output_data
+            output = result.model_dump(mode="json")
+            if artifact_metas:
+                output["_artifacts"] = [
+                    a.model_dump(mode="json") for a in artifact_metas
+                ]
+                output["_artifact_count"] = len(artifact_metas)
+
+            # 10. Update session with success
+            updated = await self._repository.update(
+                session.id,
+                {
+                    "status": AnalysisStatus.COMPLETED,
+                    "output_data": output,
+                    "provider_used": ai_response.provider.provider_name,
+                    "model_used": ai_response.provider.model,
+                    "prompt_tokens": ai_response.usage.prompt_tokens,
+                    "completion_tokens": ai_response.usage.completion_tokens,
+                    "total_tokens": ai_response.usage.total_tokens,
+                    "latency_ms": ai_response.provider.latency_ms,
+                },
+            )
+
+            if updated is None:
+                raise AnalysisError("Session was deleted during analysis")
+
+            return AnalysisResponse(
+                session_id=updated.id,
+                status=AnalysisStatus.COMPLETED.value,
+                result=result,
+                provider=ai_response.provider.provider_name,
+                model=ai_response.provider.model,
+                total_tokens=ai_response.usage.total_tokens,
+                latency_ms=ai_response.provider.latency_ms,
+                artifacts=[
+                    ArtifactUpload(
+                        filename=a.filename,
+                        file_type=a.file_type,
+                        mime_type=a.mime_type,
+                        file_size=a.file_size,
+                        storage_path=a.storage_path,
+                        content_preview=a.content_preview,
+                    )
+                    for a in artifact_metas
+                ],
+            )
+
+        except Exception as exc:
+            # Mark the session as failed
+            error_msg = str(exc)
+            await self._repository.update(
+                session.id,
+                {
+                    "status": AnalysisStatus.FAILED,
+                    "error_message": error_msg,
+                },
+            )
+
+            if isinstance(exc, ProviderUnavailableError | InvalidResponseError | AnalysisError):
+                raise
+
+            raise AnalysisError(
+                f"Multi-artifact analysis failed: {error_msg}",
+                detail={"session_id": str(session.id)},
+            ) from exc
+
     async def get_session(
         self, session_id: UUID
     ) -> AnalysisResponse:
@@ -222,6 +396,8 @@ class FailureAnalysisService:
     async def delete_session(self, session_id: UUID) -> None:
         """Delete an analysis session by ID.
 
+        Also removes any artifact files stored on disk for the session.
+
         Args:
             session_id: UUID of the session to delete.
 
@@ -233,6 +409,16 @@ class FailureAnalysisService:
             raise NotFoundError(
                 f"Analysis session not found: {session_id}",
                 detail={"session_id": str(session_id)},
+            )
+
+        # Clean up artifact files (best-effort — never throw)
+        try:
+            delete_artifact_files(self._artifacts_dir, session_id)
+        except Exception as exc:
+            _logger.warning(
+                "Failed to delete artifact files",
+                session_id=str(session_id),
+                error=str(exc),
             )
 
     # ── Private helpers ─────────────────────────────────────────
