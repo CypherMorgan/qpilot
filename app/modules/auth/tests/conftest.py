@@ -13,6 +13,7 @@ os.environ.setdefault("AI__PROVIDER", "openrouter")
 
 import pytest
 from asgi_lifespan import LifespanManager
+from fastapi import FastAPI
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -63,8 +64,9 @@ def auth_service(
     return AuthService(session=db_session, config=auth_config)
 
 
+
 @pytest.fixture
-async def app() -> AsyncGenerator:
+async def app() -> AsyncGenerator[FastAPI, None]:
     """Test app with in-memory database."""
     app = create_app()
     async with LifespanManager(app):
@@ -76,10 +78,10 @@ async def app() -> AsyncGenerator:
 
 @pytest.fixture
 async def client(
-    app,
+    app: FastAPI,
 ) -> AsyncGenerator[AsyncClient, None]:
     """Async HTTP client for integration tests."""
-    transport = ASGITransport(app=app)  # type: ignore[arg-type]
+    transport = ASGITransport(app=app)
     async with AsyncClient(
         transport=transport,
         base_url="http://test",

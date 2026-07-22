@@ -82,7 +82,7 @@ class TeamService:
         self, team_id: uuid.UUID, data: UpdateTeamRequest
     ) -> Team | None:
         """Update team name/description."""
-        update_fields: dict = {}
+        update_fields: dict[str, object] = {}
         if data.name is not None:
             # Check uniqueness if changing name
             existing = await self._team_repo.get_by_name(data.name)

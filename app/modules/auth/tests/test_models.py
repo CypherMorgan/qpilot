@@ -15,7 +15,7 @@ class TestUserRole:
 
     def test_role_is_string(self) -> None:
         assert isinstance(UserRole.ADMIN, str)
-        assert UserRole.ADMIN == "admin"
+        assert UserRole.ADMIN.value == "admin"
 
 
 class TestUserModel:

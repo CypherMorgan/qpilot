@@ -31,7 +31,7 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 
 async def _get_auth_config(request: Request) -> AuthConfig:
-    return request.app.state.auth_config
+    return request.app.state.auth_config  # type: ignore[no-any-return]
 
 
 async def _get_auth_service(

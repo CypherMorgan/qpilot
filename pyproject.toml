@@ -111,6 +111,7 @@ disable_error_code = [
     "method-assign",
     "type-arg",
     "attr-defined",
+    "call-arg",
 ]
 
 [tool.pytest.ini_options]
