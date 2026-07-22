@@ -3,6 +3,9 @@
  *
  * Stores the JWT in localStorage. On mount, validates the token by
  * calling GET /auth/me and hydrates the user state.
+ *
+ * Demo mode: when the backend is unreachable (e.g. GitHub Pages static
+ * preview), the context enters demo mode so the UI remains browsable.
  */
 
 import {
@@ -24,6 +27,8 @@ interface AuthContextValue {
   token: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  /** True when the backend is unreachable — UI is fully browsable but API calls will fail. */
+  isDemoMode: boolean;
   login: (username: string, password: string) => Promise<void>;
   register: (
     username: string,
@@ -33,9 +38,27 @@ interface AuthContextValue {
   ) => Promise<void>;
   logout: () => void;
   refreshUser: () => Promise<void>;
+  /** Manually enter demo mode (e.g. from the login page). */
+  enterDemoMode: () => void;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
+
+/**
+ * Check if an error is a network/unreachable error (not just an invalid
+ * response). This is how we detect "no backend" on GitHub Pages.
+ */
+function isNetworkError(err: unknown): boolean {
+  if (!err || typeof err !== "object") return false;
+  // Normalized ApiError from api-client
+  const code = (err as { code?: string }).code;
+  const status = (err as { status?: number }).status;
+  if (code === "NETWORK_ERROR" || code === "TIMEOUT") return true;
+  if (status === 0) return true;
+  // Raw Axios error
+  if (code === "ERR_NETWORK" || code === "ECONNABORTED") return true;
+  return false;
+}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -43,25 +66,46 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return localStorage.getItem(TOKEN_KEY);
   });
   const [isLoading, setIsLoading] = useState(true);
+  const [isDemoMode, setIsDemoMode] = useState(false);
 
   // Validate token on mount
   useEffect(() => {
     if (!token) {
-      setIsLoading(false);
+      // No token — try a lightweight probe to detect if backend exists
+      authService
+        .getMe()
+        .then((u) => {
+          setUser(u);
+          setIsLoading(false);
+        })
+        .catch((err: unknown) => {
+          if (isNetworkError(err)) {
+            setIsDemoMode(true);
+          }
+          // No token + no backend or invalid token — either way, not authenticated
+          setIsLoading(false);
+        });
       return;
     }
+
     authService
       .getMe()
       .then((u) => {
         setUser(u);
         setIsLoading(false);
       })
-      .catch(() => {
-        // Token is invalid/expired — clear it
-        localStorage.removeItem(TOKEN_KEY);
-        setToken(null);
-        setUser(null);
-        setIsLoading(false);
+      .catch((err: unknown) => {
+        if (isNetworkError(err)) {
+          // Backend unreachable — enter demo mode, keep UI browsable
+          setIsDemoMode(true);
+          setIsLoading(false);
+        } else {
+          // Token is invalid/expired — clear it
+          localStorage.removeItem(TOKEN_KEY);
+          setToken(null);
+          setUser(null);
+          setIsLoading(false);
+        }
       });
   }, [token]);
 
@@ -70,6 +114,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.setItem(TOKEN_KEY, result.access_token);
     setToken(result.access_token);
     setUser(result.user);
+    setIsDemoMode(false);
   }, []);
 
   const registerFn = useCallback(
@@ -88,6 +133,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.setItem(TOKEN_KEY, result.access_token);
       setToken(result.access_token);
       setUser(result.user);
+      setIsDemoMode(false);
     },
     [],
   );
@@ -111,18 +157,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [token]);
 
+  const enterDemoMode = useCallback(() => {
+    setIsDemoMode(true);
+    setIsLoading(false);
+  }, []);
+
   const value = useMemo(
     () => ({
       user,
       token,
       isAuthenticated: !!user,
       isLoading,
+      isDemoMode,
       login,
       register: registerFn,
       logout,
       refreshUser,
+      enterDemoMode,
     }),
-    [user, token, isLoading, login, registerFn, logout, refreshUser],
+    [user, token, isLoading, isDemoMode, login, registerFn, logout, refreshUser, enterDemoMode],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

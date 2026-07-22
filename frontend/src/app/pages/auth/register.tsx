@@ -15,7 +15,7 @@ import {
 import { APP_NAME } from "@/lib/constants";
 
 export function RegisterPage() {
-  const { register } = useAuth();
+  const { register, isDemoMode, enterDemoMode } = useAuth();
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -39,6 +39,11 @@ export function RegisterPage() {
     }
   };
 
+  const handleDemoMode = () => {
+    enterDemoMode();
+    navigate("/");
+  };
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <Card className="w-full max-w-md">
@@ -48,6 +53,14 @@ export function RegisterPage() {
         </CardHeader>
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4">
+            {isDemoMode && (
+              <div className="rounded-md bg-amber-500/15 p-3 text-sm text-amber-600 dark:text-amber-400">
+                <p className="font-medium">Backend unavailable</p>
+                <p className="mt-1">
+                  You can browse the UI in demo mode. AI features require a running backend.
+                </p>
+              </div>
+            )}
             {error && (
               <div className="rounded-md bg-destructive/15 p-3 text-sm text-destructive">
                 {error}
@@ -103,6 +116,16 @@ export function RegisterPage() {
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? "Creating account..." : "Create Account"}
             </Button>
+            {isDemoMode && (
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full"
+                onClick={handleDemoMode}
+              >
+                Browse in Demo Mode
+              </Button>
+            )}
             <p className="text-sm text-muted-foreground">
               Already have an account?{" "}
               <Link to="/login" className="text-primary hover:underline">
