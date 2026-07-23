@@ -18,6 +18,7 @@ from fastapi import APIRouter, Request
 from structlog import get_logger
 
 from app.ai.registry import ProviderRegistry
+from app.ai.resilience import HealthTracker, ResilientProvider
 from app.domain.models import ResponseMeta
 from app.infrastructure.database import DatabaseManager
 
@@ -67,6 +68,23 @@ async def health_check(request: Request) -> dict[str, Any]:
         else:
             db_check = {"status": "unhealthy", "latency_ms": elapsed_ms}
 
+    # Build provider health summary
+    health_tracker: HealthTracker | None = getattr(
+        request.app.state, "health_tracker", None
+    )
+    provider_health: dict[str, Any] = {"status": "not_configured"}
+    if registry and registry.available:
+        provider_health = {
+            "status": "healthy",
+            "available": registry.available,
+            "active": active_provider,
+        }
+        if health_tracker and active_provider:
+            stats = health_tracker.get(active_provider)
+            provider_health["active_healthy"] = stats.is_healthy
+            provider_health["active_success_rate"] = round(stats.success_rate, 3)
+            provider_health["active_avg_latency_ms"] = stats.avg_latency_ms
+
     return {
         "data": {
             "status": "healthy",
@@ -76,6 +94,7 @@ async def health_check(request: Request) -> dict[str, Any]:
             "active_model": active_model,
             "checks": {
                 "database": db_check,
+                "providers": provider_health,
             },
         },
         "meta": ResponseMeta(

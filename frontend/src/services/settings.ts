@@ -54,3 +54,33 @@ export async function updateAiSettings(
   );
   return response.data.data;
 }
+
+// ── Provider Health ──────────────────────────────────────────
+
+export interface ProviderHealthStats {
+  name: string;
+  success_count: number;
+  failure_count: number;
+  avg_latency_ms: number;
+  success_rate: number;
+  is_healthy: boolean;
+  consecutive_failures: number;
+  last_error: string;
+  last_error_time: number;
+  last_success_time: number;
+}
+
+export interface ProvidersHealthResponse {
+  providers: ProviderHealthStats[];
+  total_providers: number;
+}
+
+/**
+ * Fetch provider health statistics.
+ */
+export async function getProvidersHealth(): Promise<ProvidersHealthResponse> {
+  const response = await apiClient.get<
+    ApiSuccessResponse<ProvidersHealthResponse>
+  >("/settings/providers/health");
+  return response.data.data;
+}

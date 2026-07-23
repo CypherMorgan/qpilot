@@ -21,6 +21,7 @@ from app.ai.providers.gemini import GeminiProvider
 from app.ai.providers.ollama import OllamaProvider
 from app.ai.providers.openrouter import OpenRouterProvider
 from app.ai.registry import ProviderRegistry
+from app.ai.resilience import HealthTracker, ResilientProvider
 from app.api.v1.api import router as v1_router
 from app.config import AppConfig
 from app.exceptions import (
@@ -214,41 +215,63 @@ def _make_lifespan(config: AppConfig) -> Callable[..., AsyncIterator[None]]:
         auth_config = AuthConfig()
         app.state.auth_config = auth_config
 
-        # Initialise the provider registry
+        # Initialise the provider registry with resilience
         registry = ProviderRegistry()
+        health_tracker = HealthTracker()
         registered_providers: list[str] = []
 
+        # Build available providers
+        available: list[tuple[str, Any]] = []
         if config.ai.openrouter_api_key:
-            registry.register(
+            available.append((
                 "openrouter",
                 OpenRouterProvider(
                     api_key=config.ai.openrouter_api_key,
                     model=config.ai.openrouter_model,
                 ),
-            )
+            ))
             registered_providers.append("openrouter")
 
         if config.ai.ollama_base_url:
-            registry.register(
+            available.append((
                 "ollama",
                 OllamaProvider(
                     base_url=config.ai.ollama_base_url,
                     model=config.ai.ollama_model,
                 ),
-            )
+            ))
             registered_providers.append("ollama")
 
         if config.ai.gemini_api_key:
-            registry.register(
+            available.append((
                 "gemini",
                 GeminiProvider(
                     api_key=config.ai.gemini_api_key,
                     model=config.ai.gemini_model,
                 ),
-            )
+            ))
             registered_providers.append("gemini")
 
+        # Register individual providers for direct access
+        for name, provider in available:
+            registry.register(name, provider)
+
+        # Build ResilientProvider with fallback chain
+        active_provider = config.ai.provider or (available[0][0] if available else "")
+        if active_provider and available:
+            # Reorder: primary first, then all others as fallbacks
+            primary = [(n, p) for n, p in available if n == active_provider]
+            fallbacks = [(n, p) for n, p in available if n != active_provider]
+            resilient = ResilientProvider(
+                providers=primary + fallbacks,
+                health_tracker=health_tracker,
+            )
+            # Register resilient wrapper under the active provider name
+            # (overwriting the individual registration)
+            registry._providers[active_provider] = resilient  # noqa: SLF001
+
         app.state.provider_registry = registry
+        app.state.health_tracker = health_tracker
 
         # Initialise the prompt manager
         prompt_manager = PromptManager(config.prompts_dir)

@@ -18,6 +18,7 @@ from app.ai.providers.gemini import GeminiProvider
 from app.ai.providers.ollama import OllamaProvider
 from app.ai.providers.openrouter import OpenRouterProvider
 from app.ai.registry import ProviderRegistry
+from app.ai.resilience import HealthTracker, ResilientProvider
 from app.config import AIConfig
 from app.domain.models import ResponseMeta
 
@@ -144,39 +145,68 @@ def _write_env_var(key: str, value: str) -> None:
 def _update_provider_registry(
     registry: ProviderRegistry | None, ai: AIConfig
 ) -> None:
-    """Re-register providers in the registry after config changes."""
+    """Re-register providers in the registry after config changes.
+
+    Rebuilds the ResilientProvider with the updated fallback chain.
+    """
     if registry is None:
         return
 
     # Clear existing providers
-    registry._providers = {}
+    registry._providers = {}  # noqa: SLF001
 
+    # Build available providers
+    available: list[tuple[str, object]] = []
     if ai.openrouter_api_key:
-        registry.register(
+        available.append((
             "openrouter",
             OpenRouterProvider(
                 api_key=ai.openrouter_api_key,
                 model=ai.openrouter_model,
             ),
-        )
+        ))
 
     if ai.ollama_base_url:
-        registry.register(
+        available.append((
             "ollama",
             OllamaProvider(
                 base_url=ai.ollama_base_url,
                 model=ai.ollama_model,
             ),
-        )
+        ))
 
     if ai.gemini_api_key:
-        registry.register(
+        available.append((
             "gemini",
             GeminiProvider(
                 api_key=ai.gemini_api_key,
                 model=ai.gemini_model,
             ),
+        ))
+
+    # Register individual providers for direct access
+    for name, provider in available:
+        registry.register(name, provider)  # type: ignore[arg-type]
+
+    # Build ResilientProvider with fallback chain
+    active_provider = ai.provider or (available[0][0] if available else "")
+    if active_provider and available:
+        primary = [(n, p) for n, p in available if n == active_provider]
+        fallbacks = [(n, p) for n, p in available if n != active_provider]
+
+        # Reuse existing health tracker if available, otherwise create new
+        existing_resilient = registry._providers.get(active_provider)  # noqa: SLF001
+        tracker: HealthTracker
+        if isinstance(existing_resilient, ResilientProvider):
+            tracker = existing_resilient.health_tracker
+        else:
+            tracker = HealthTracker()
+
+        resilient = ResilientProvider(
+            providers=primary + fallbacks,  # type: ignore[arg-type]
+            health_tracker=tracker,
         )
+        registry._providers[active_provider] = resilient  # type: ignore[index]  # noqa: SLF001
 
 
 # ── Routes ──────────────────────────────────────────────────────

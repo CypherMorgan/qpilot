@@ -1,6 +1,6 @@
-import { Moon, Sun, ExternalLink, Trash2, Loader2, Cpu, Eye, EyeOff, Check, AlertCircle } from "lucide-react";
+import { Moon, Sun, ExternalLink, Trash2, Loader2, Cpu, Eye, EyeOff, Check, AlertCircle, Activity, RefreshCw } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 import { useTheme } from "@/hooks/use-theme";
 import { Button } from "@/components/ui/button";
@@ -21,7 +21,9 @@ import { deleteExpiredSessions } from "@/services/cleanup";
 import {
   getAiSettings,
   updateAiSettings,
+  getProvidersHealth,
   type AiSettings,
+  type ProviderHealthStats,
 } from "@/services/settings";
 
 export function SettingsPage() {
@@ -47,6 +49,23 @@ export function SettingsPage() {
   const [apiKeyInput, setApiKeyInput] = useState("");
   const [model, setModel] = useState("");
   const [baseUrl, setBaseUrl] = useState("");
+
+  // ── Provider Health state ──────────────────────────────────
+  const [healthStats, setHealthStats] = useState<ProviderHealthStats[]>([]);
+  const [healthLoading, setHealthLoading] = useState(true);
+
+  const fetchHealth = useCallback(() => {
+    getProvidersHealth()
+      .then((res) => setHealthStats(res.providers))
+      .catch(() => {
+        // Health endpoint might not be available yet
+      })
+      .finally(() => setHealthLoading(false));
+  }, []);
+
+  useEffect(() => {
+    fetchHealth();
+  }, [fetchHealth]);
 
   useEffect(() => {
     getAiSettings()
@@ -94,6 +113,7 @@ export function SettingsPage() {
       setApiKeyInput(""); // Clear after save
       setAiSuccess(true);
       setTimeout(() => setAiSuccess(false), 3000);
+      fetchHealth(); // Refresh health stats after provider change
     } catch (err) {
       setAiError(
         (err as { message?: string })?.message ?? "Failed to save AI settings",
@@ -385,6 +405,98 @@ export function SettingsPage() {
                 </span>
               )}
             </div>
+          </div>
+        )}
+      </section>
+
+      <Separator />
+
+      {/* ── Provider Health Dashboard ─────────────────────────── */}
+      <section>
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-base font-semibold">Provider Health</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Real-time stats for configured AI providers. Retries and
+              fallbacks happen automatically on transient errors.
+            </p>
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={fetchHealth}
+            disabled={healthLoading}
+            className="gap-1.5"
+          >
+            <RefreshCw className={`h-3.5 w-3.5 ${healthLoading ? "animate-spin" : ""}`} />
+            Refresh
+          </Button>
+        </div>
+
+        {healthLoading ? (
+          <div className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            Loading health stats...
+          </div>
+        ) : healthStats.length === 0 ? (
+          <div className="mt-4 rounded-lg border border-dashed p-4 text-center text-sm text-muted-foreground">
+            No providers configured yet. Set up an AI provider above to see health stats.
+          </div>
+        ) : (
+          <div className="mt-4 space-y-3">
+            {healthStats.map((stat) => (
+              <div
+                key={stat.name}
+                className="flex items-center justify-between rounded-lg border p-3"
+              >
+                <div className="flex items-center gap-3">
+                  <Activity
+                    className={`h-4 w-4 ${
+                      stat.is_healthy && stat.success_count > 0
+                        ? "text-emerald-500"
+                        : stat.consecutive_failures > 0
+                          ? "text-amber-500"
+                          : "text-muted-foreground"
+                    }`}
+                  />
+                  <div>
+                    <p className="text-sm font-medium capitalize">{stat.name}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {stat.success_count + stat.failure_count === 0
+                        ? "No requests yet"
+                        : `${stat.success_count} succeeded, ${stat.failure_count} failed`}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-4 text-right text-xs text-muted-foreground">
+                  {stat.avg_latency_ms > 0 && (
+                    <span>{stat.avg_latency_ms}ms avg</span>
+                  )}
+                  {stat.success_count + stat.failure_count > 0 && (
+                    <span>
+                      {Math.round(stat.success_rate * 100)}% success
+                    </span>
+                  )}
+                  <span
+                    className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+                      stat.is_healthy
+                        ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
+                        : "bg-destructive/15 text-destructive"
+                    }`}
+                  >
+                    {stat.is_healthy ? "Healthy" : "Unhealthy"}
+                  </span>
+                  {stat.last_error && (
+                    <span
+                      className="max-w-[200px] truncate text-amber-600 dark:text-amber-400"
+                      title={stat.last_error}
+                    >
+                      {stat.last_error}
+                    </span>
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
         )}
       </section>
