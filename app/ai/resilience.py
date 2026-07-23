@@ -21,12 +21,12 @@ from __future__ import annotations
 import asyncio
 import random
 import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any
 
 from structlog import get_logger
 
-from app.ai.models import AIRequest, AIResponse, ProviderMetadata, TokenUsage
+from app.ai.models import AIRequest, AIResponse
 from app.ai.protocol import AIProvider
 from app.exceptions import (
     AuthenticationError,

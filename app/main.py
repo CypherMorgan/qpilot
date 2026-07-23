@@ -268,7 +268,7 @@ def _make_lifespan(config: AppConfig) -> Callable[..., AsyncIterator[None]]:
             )
             # Register resilient wrapper under the active provider name
             # (overwriting the individual registration)
-            registry._providers[active_provider] = resilient  # noqa: SLF001
+            registry._providers[active_provider] = resilient
 
         app.state.provider_registry = registry
         app.state.health_tracker = health_tracker

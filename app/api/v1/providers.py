@@ -17,7 +17,7 @@ from typing import Any
 from fastapi import APIRouter, Request
 
 from app.ai.registry import ProviderRegistry
-from app.ai.resilience import HealthTracker, ResilientProvider
+from app.ai.resilience import HealthTracker
 from app.domain.models import ResponseMeta
 
 router = APIRouter(

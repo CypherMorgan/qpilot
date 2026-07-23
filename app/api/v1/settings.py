@@ -153,7 +153,7 @@ def _update_provider_registry(
         return
 
     # Clear existing providers
-    registry._providers = {}  # noqa: SLF001
+    registry._providers = {}
 
     # Build available providers
     available: list[tuple[str, object]] = []
@@ -195,7 +195,7 @@ def _update_provider_registry(
         fallbacks = [(n, p) for n, p in available if n != active_provider]
 
         # Reuse existing health tracker if available, otherwise create new
-        existing_resilient = registry._providers.get(active_provider)  # noqa: SLF001
+        existing_resilient = registry._providers.get(active_provider)
         tracker: HealthTracker
         if isinstance(existing_resilient, ResilientProvider):
             tracker = existing_resilient.health_tracker
@@ -206,7 +206,7 @@ def _update_provider_registry(
             providers=primary + fallbacks,  # type: ignore[arg-type]
             health_tracker=tracker,
         )
-        registry._providers[active_provider] = resilient  # type: ignore[index]  # noqa: SLF001
+        registry._providers[active_provider] = resilient  # type: ignore[index]
 
 
 # ── Routes ──────────────────────────────────────────────────────
